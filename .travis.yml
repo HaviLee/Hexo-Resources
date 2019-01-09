@@ -16,7 +16,7 @@ before_script:
   - git config --global user.name "HaviLee" #设置github用户名
   - git config --global user.email 1058695900@qq.com #设置github用户邮箱
 # github仓库操作
-  # - sed -i'' "s~${GH_REF}~${GH_TOKEN}:x-oauth-basic@${GH_REF}~" _config.yml
+  - sed -i'' "s~${GH_REF}~${GH_TOKEN}:x-oauth-basic@${GH_REF}~" _config.yml
 
 
 script:
