@@ -8,8 +8,8 @@ subtitle: My Tech Blog! 2019 干！
 description: Hello, I'm Havi, a iOS developer, had 6 years experiences, now working in Accenture and on Disney project.
 keywords: iOS Swift OC Fastlane CI/CD
 author: HaviLee
-language: En & CN
-timezone: BeiJing
+language: En
+timezone: 
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'

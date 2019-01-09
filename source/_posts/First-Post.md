@@ -1,8 +1,7 @@
 ---
 title: Hello Hexo & Github Page
-date: 2017-05-26 12:12:57
 categories: 
-    - Hexo
+  - Hexo
 ---
 Welcome to [My Blog](http://lizitong.ren/)! This is my blog. Click [documentation](https://hexo.io/docs/) for more info. 
 
