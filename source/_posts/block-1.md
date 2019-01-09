@@ -226,18 +226,18 @@ int main(int argc, const char * argv[]) {
 
 ```
 通过打断点可以查看：
-![duan1](https://media.githubusercontent.com/mediaInterview-Skill/OC-Class-Analysis/master/Image/block2.png)
+![duan1](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block2.png)
 下面进入block内部，看一下堆栈信息中的函数调用地址。<strong>Debug workflow -> slways show Disassembly</strong>
 
-![duan2](https://media.githubusercontent.com/mediaInterview-Skill/OC-Class-Analysis/master/Image/block5.png)
+![duan2](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block5.png)
 
 ## 总结：到这里我们从源码查看了所有和block有关的结构体，下面通过一张图解释各个结构体的关系：
 
-![duan3](https://media.githubusercontent.com/mediaInterview-Skill/OC-Class-Analysis/master/Image/Block.png)
+![duan3](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/Block.png)
 
 **Block的底层数据结构：**
 
-![duan3](https://media.githubusercontent.com/mediaInterview-Skill/OC-Class-Analysis/master/Image/block7.png)
+![duan3](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block7.png)
 
 # Block捕获变量
 
@@ -321,10 +321,10 @@ int main(int argc, const char * argv[]) {
 
 ```
 我们生成c++
-![c++](https://media.githubusercontent.com/mediaInterview-Skill/OC-Class-Analysis/master/Image/c%2B%2B.png)
+![c++](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/c%2B%2B.png)
 通过上面的代码发现block_impl_0中并没有添加任何变量，因为block不需要捕获全局变量，因为全局变量在哪里都可以访问。<br>
 <strong>因为局域变量需要跨函数访问所以需要捕获，全局变量在哪里都可以访问，所以不需要捕获</strong>
-![c++](https://media.githubusercontent.com/mediaInterview-Skill/OC-Class-Analysis/master/Image/auto-static.png)
+![c++](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/auto-static.png)
 
 ** ⚠️局部变量都会被block捕获，自动变量是值捕获，静态变量为地址捕获。全局变量不会被捕获。**
 
@@ -495,14 +495,14 @@ block-type:__NSGlobalBlock__----__NSMallocBlock__----__NSStackBlock__
 
 ### block在内存中的存储
 block在内存是如何存储的？
-![block-memmory](https://media.githubusercontent.com/mediaInterview-Skill/OC-Class-Analysis/master/Image/block4.png)
+![block-memmory](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block4.png)
 
 > 1.__NSGlobalBlock__直到程序结束后才会被收回，很少使用这样的block<br>
 > 2.__NSStackBlokc__存放在栈中，栈中的内存是由系统自动分配和释放，在作用执行完之后会立即释放，在相同的作用域中定义并调用block似乎多次一举<br>
 > 3.__NSMallocBlock__在平时编程中最常用的，存放在堆中的block需要程序员自己释放。
 
 ### block是如何定义其类型
-![block-memmory](https://media.githubusercontent.com/mediaInterview-Skill/OC-Class-Analysis/master/Image/block3.png)
+![block-memmory](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block3.png)
 我们验证上面的结论：
 首先我们关闭ARC,因为ARC会自动帮我们进行很多处理：
 
@@ -560,7 +560,7 @@ int main(int argc, const char * argv[]) {
 
 看到a时一个不可控的值，是因为创建的block是 __NSStackBlock__ (自己思考为什么)因此block是存在栈中的，当test函数执行完之后，栈内存中的block占用的内存会被收回，因此就找不到数据a了；
 
-![stack](https://media.githubusercontent.com/mediaInterview-Skill/OC-Class-Analysis/master/Image/nsstackblock.png)
+![stack](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/nsstackblock.png)
 
 为了避免这种情况发生，需要将block复制到堆中：
 ```php
@@ -585,7 +585,7 @@ int main(int argc, const char * argv[]) {
 打印结果：block----------10
 ```
 其他类型的block调用copy会有什么结果呢？
-![stack](https://media.githubusercontent.com/mediaInterview-Skill/OC-Class-Analysis/master/Image/block6.png)
+![stack](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block6.png)
 >⚠️ 因此在MRC开始时期，我们经常使用copy来保存block，将栈上的block复制到堆中，即使栈中的block销毁，堆上的block也不会销毁，需要我们自己销毁,<strong>但是在ARC环境下，xcode会自动给我们进行copy操作，使得block不会被销毁。
 
 ## ARC帮你做了什么❓
