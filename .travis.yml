@@ -29,7 +29,7 @@ after_success:
 
 branches:
   only:
-    - develop
+    - master
 env:
  global:
    - GH_REF: github.com/HaviLee/HaviLee.github.io.git
