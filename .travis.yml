@@ -2,7 +2,6 @@ language: node_js
 node_js:
   - '6'
 before_install:
-  - cd ./helloWorld
   - export TZ='Asia/Shanghai'  # 设置时区
   - npm install -g hexo
   - npm install -g hexo-cli
