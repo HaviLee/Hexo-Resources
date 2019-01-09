@@ -3,17 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle:
-description:
-keywords:
+title: HaviLee
+subtitle: My Tech Blog! 2019 干！
+description: Hello, I'm Havi, a iOS developer, had 6 years experiences, now working in Accenture and on Disney project.
+keywords: iOS Swift OC Fastlane CI/CD
 author: HaviLee
-language:
-timezone:
+language: En & CN
+timezone: BeiJing
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+url: http://lizitong.ren
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
