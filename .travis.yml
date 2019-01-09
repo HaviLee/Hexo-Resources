@@ -2,9 +2,10 @@ language: node_js
 node_js:
   - '6'
 before_install:
-- export TZ='Asia/Shanghai'  # 设置时区
-- npm install -g hexo
-- npm install -g hexo-cli
+  - cd ./helloWorld
+  - export TZ='Asia/Shanghai'  # 设置时区
+  - npm install -g hexo
+  - npm install -g hexo-cli
 
 install:
   - npm install
@@ -16,7 +17,6 @@ before_script:
   - git config --global user.name "HaviLee" #设置github用户名
   - git config --global user.email 1058695900@qq.com #设置github用户邮箱
 # github仓库操作
-  - cd ./helloWorld
   - sed -i'' "s~${GH_REF}~${GH_TOKEN}:x-oauth-basic@${GH_REF}~" _config.yml
 
 
