@@ -27,6 +27,34 @@ category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
+# Post wordcount display settings
+# Dependencies: https://github.com/willin/hexo-wordcount
+post_wordcount:
+  item_text: true
+  wordcount: true
+  min2read: true
+  totalcount: true
+  separated_meta: true
+
+# Progress bar in the top during page loading.
+pace: ture
+# Themes list:
+#pace-theme-big-counter
+#pace-theme-bounce
+#pace-theme-barber-shop
+#pace-theme-center-atom
+#pace-theme-center-circle
+#pace-theme-center-radar
+#pace-theme-center-simple
+#pace-theme-corner-indicator
+#pace-theme-fill-left
+#pace-theme-flash
+#pace-theme-loading-bar
+#pace-theme-mac-osx
+#pace-theme-minimal
+# For example
+# pace_theme: pace-theme-center-simple
+pace_theme: pace-theme-minimal
 
 # Writing
 new_post_name: :title.md # File name of new posts
@@ -50,7 +78,7 @@ highlight:
 # order_by: Posts order. (Order by date descending by default)
 index_generator:
   path: ''
-  per_page: 10
+  per_page: 20
   order_by: -date
   
 # Category & Tag
@@ -67,13 +95,15 @@ time_format: HH:mm:ss
 
 # Pagination
 ## Set per_page to 0 to disable pagination
-per_page: 10
+per_page: 20
 pagination_dir: page
 
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
 theme: next
+
+disqus_shortname: havilee
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html

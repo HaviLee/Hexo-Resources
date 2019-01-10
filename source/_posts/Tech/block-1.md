@@ -9,16 +9,16 @@ tags:
   - Block
 ---
 
-# 面试题：
-1. block原理是什么？本质是什么？
-2. __block作用是什么？有什么注意点？
-3. block的属性修饰词为什么是copy？使用block有哪些使用注意？
-4. block在修改NSMutableArray，需不需要使用__blcok?
+# 面试题
+**1.block原理是什么？本质是什么？**
+2.__block作用是什么？有什么注意点？
+3.block的属性修饰词为什么是copy？使用block有哪些使用注意？
+4.block在修改NSMutableArray，需不需要使用__blcok?
 
-> 首先：⚠️block本质也是一个OC对象，内部也有一个isa指针。block是封装了函数调用以及函数调用环境的OC对象。
+>首先：block本质也是一个OC对象，内部也有一个isa指针。block是封装了函数调用以及函数调用环境的OC对象。
 
 # 探寻block的本质
-```php
+```objectivec
 - (void)createBlock
 {
 	int age = 10;
@@ -30,12 +30,12 @@ tags:
 }
 ```
 使用下面的命令将.m文件转化为C++
-```php
+```objectivec
 xcrun -sdk iphonesimulator clang -rewrite-objc HaviBlock.m
 ```
 下面是C++结构的block：
 
-```php
+```objectivec
 struct __HaviBlock__createBlock_block_impl_0 {//block的C++结构
   struct __block_impl impl;
   struct __HaviBlock__createBlock_block_desc_0* Desc;
@@ -67,15 +67,15 @@ static void _I_HaviBlock_createBlock(HaviBlock * self, SEL _cmd) {//这个就是
 }
 
 ```
-## 定义block变量
-```php
+## block变量定义
+```objectivec
 void(*block)(int, int) = ((void (*)(int, int))&__HaviBlock__createBlock_block_impl_0((void *)__HaviBlock__createBlock_block_func_0, &__HaviBlock__createBlock_block_desc_0_DATA, age));
 ```
 从上面的定义，block中调用了__HaviBlock__createBlock_block_impl_0函数，并且将__HaviBlock__createBlock_block_impl_0函数的地址赋值给了blcok.下面来看下__HaviBlock__createBlock_block_impl_0内部结构：
 
-## __HaviBlock__createBlock_block_impl_0函数内部结构体：
+## _block_impl_0内部结构体
 
-```php
+```objectivec
 struct __HaviBlock__createBlock_block_impl_0
 
 {
@@ -95,15 +95,15 @@ __HaviBlock__createBlock_block_impl_0 结构体内有一个同名的构造函数
 也就是说最终将__HaviBlock__createBlock_block_impl_0结构体的地址赋值给了block变量！<br>
 
 __HaviBlock__createBlock_block_impl_0构造函数有四个参数：
-1）. (void *)__HaviBlock__createBlock_block_func_0
-2）. &__HaviBlock__createBlock_block_desc_0_DATA
-3）. int _age,
-4）. int flags=0
+1.(void *)__HaviBlock__createBlock_block_func_0
+2.&__HaviBlock__createBlock_block_desc_0_DATA
+3.int _age,
+4.int flags=0
 其中flag是具有默认值，这里的age则是表示传入_age参数赋值给age成员；<br>
-## 接下来介绍这三个参数：
+## block_impl_0参数
 
 ### __HaviBlock__createBlock_block_func_0
-```php
+```objectivec
 static void __HaviBlock__createBlock_block_func_0(struct __HaviBlock__createBlock_block_impl_0 *__cself, int a, int b) {
   int age = __cself->age; // bound by copy
 
@@ -114,7 +114,7 @@ static void __HaviBlock__createBlock_block_func_0(struct __HaviBlock__createBloc
 在这个函数中，首先取出age的值，紧接着可以看到两个熟悉的NSLog，这个就是我们再block中写下的代码。所以__HaviBlock__createBlock_block_func_0函数中其实保存着我们在block中写下的代码。__HaviBlock__createBlock_block_impl_0中传入的是__HaviBlock__createBlock_block_func_0，<strong> 就是说我们再block中写下的代码被封装成为__HaviBlock__createBlock_block_func_0</strong>并把__HaviBlock__createBlock_block_func_0函数的地址保存在__HaviBlock__createBlock_block_impl_0中。
 
 ### __HaviBlock__createBlock_block_desc_0_DATA
-```php
+```objectivec
 
 static struct __HaviBlock__createBlock_block_desc_0 {
   size_t reserved;
@@ -131,7 +131,7 @@ age是我们定义的局部变量。因为在block中使用age局部变量，所
 如果在block中没有使用age，则只会传入__HaviBlock__createBlock_block_func_0 和__HaviBlock__createBlock_block_desc_0_DATA这两个参数。
 <br>
 **在这里可以思考：为什么在我们定义block之后，再改变age的值，在block调用的时候无效？**
-```php
+```objectivec
 int age = 10;
 void(^block)(int ,int) = ^(int a, int b){
      NSLog(@"this is block,a = %d,b = %d",a,b);
@@ -145,8 +145,8 @@ block(3,5);
 ```
 A:因为在block定义的时候，已经将age的值传入__HaviBlock__createBlock_block_impl_0结构体中，并在调用的时候讲age从block中取出来使用，因此在block定义之后对局部变量进行改变无法被block捕获的。
 
-## 重新探究__HaviBlock__createBlock_block_impl_0结构体
-```php
+## 重新探究_impl_0结构体
+```objectivec
 struct __HaviBlock__createBlock_block_impl_0 {
   struct __block_impl impl;
   struct __HaviBlock__createBlock_block_desc_0* Desc;
@@ -161,7 +161,7 @@ struct __HaviBlock__createBlock_block_impl_0 {
 ```
 __HaviBlock__createBlock_block_impl_0第一个变量就是__block_impl结构体：
 
-```php
+```objectivec
 struct __block_impl {
   void *isa;
   int Flags;
@@ -173,13 +173,14 @@ struct __block_impl {
 从这里__HaviBlock__createBlock_block_impl_0内部有一个isa指针，因此说明block本质上是一个OC对象。而在
 __HaviBlock__createBlock_block_impl_0 构造函数中传入的值存储在__HaviBlock__createBlock_block_impl_0结构体中，最后将改结构体的地址赋值给block。
 
-## 根据__HaviBlock__createBlock_block_impl_0三个参数的分析得出结论：<br>
-1. __block_impl结构体中的指针存储着&_NSConcreteStackBlock地址，可以暂时理解为类对象地址，block就是_NSConcreteStackBlock类型的。<br>
-2. block代码中的代码被封装成为__HaviBlock__createBlock_block_func_0，FuncPtr则存储着__HaviBlock__createBlock_block_func_0的地址<br>
-3. Desc指向__HaviBlock__createBlock_block_desc_0结构体对象，其中存储着__HaviBlock__createBlock_block_impl_0结构体占用的空间；
+## 总结
+根据__HaviBlock__createBlock_block_impl_0三个参数的分析得出结论：<br>
+1.__block_impl结构体中的指针存储着&_NSConcreteStackBlock地址，可以暂时理解为类对象地址，block就是_NSConcreteStackBlock类型的。<br>
+2.block代码中的代码被封装成为__HaviBlock__createBlock_block_func_0，FuncPtr则存储着__HaviBlock__createBlock_block_func_0的地址<br>
+3.Desc指向__HaviBlock__createBlock_block_desc_0结构体对象，其中存储着__HaviBlock__createBlock_block_impl_0结构体占用的空间；
 
 ## 调用block执行内部函数
-```php
+```objectivec
 
  ((void (*)(__block_impl *, int, int))((__block_impl *)block)->FuncPtr)((__block_impl *)block, 3, 5);
 
@@ -193,7 +194,7 @@ FunPtr中存储着通过代码块封装的函数地址，那么调用这个函�
 
 ## 验证Block本质确实是__HaviBlock__createBlock_block_impl_0结构体
 方法：我们使用自定义和Block一致的结构体，并将block内部的结构体强制转化为我们自定义的结构体：
-```php
+```objectivec
 struct __main_block_desc_0 { 
     size_t reserved;
     size_t Block_size;
@@ -250,7 +251,7 @@ auto变量离开作用域就会销毁，<strong>局部变量前面默认添加au
 
 ### static变量
 static修饰的变量为指针传递，就是说他是通过传递该值的地址到block内部，看看下源码：
-```php
+```objectivec
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         auto int age = 10;
@@ -269,7 +270,7 @@ int main(int argc, const char * argv[]) {
 
 ```
 我们经过xcrun编译为C++：
-```php
+```objectivec
 struct __HaviNewBlock__verifyBlock_block_impl_0 {
   struct __block_impl impl;
   struct __HaviNewBlock__verifyBlock_block_desc_0* Desc;
@@ -303,7 +304,7 @@ static void __HaviNewBlock__verifyBlock_block_func_0(struct __HaviNewBlock__veri
 
 ## 全局变量
 我们看下全局的变量捕获情况：
-```php
+```objectivec
 int a = 10;
 static int b = 11;
 int main(int argc, const char * argv[]) {
@@ -328,9 +329,275 @@ int main(int argc, const char * argv[]) {
 
 ** ⚠️局部变量都会被block捕获，自动变量是值捕获，静态变量为地址捕获。全局变量不会被捕获。**
 
-# 附加题：下面的block是否会捕获变量呢？
+ 
+# block的类型
 
-```php
+block是什么类型？在前面的源代码里看到isa指向了_NSConcreateStackBlock对象，那么block是不是就是_NSConcreateStackBlock类型？？？
+```objectivec
+int main(int argc, const char * argv[]) {
+@autoreleasepool {
+    // __NSGlobalBlock__ : __NSGlobalBlock : NSBlock : NSObject
+    void (^block)(void) = ^{
+        NSLog(@"Hello");
+    };
+    
+    NSLog(@"%@", [block class]);
+    NSLog(@"%@", [[block class] superclass]);
+    NSLog(@"%@", [[[block class] superclass] superclass]);
+    NSLog(@"%@", [[[[block class] superclass] superclass] superclass]);
+}
+return 0;
+}
+```
+打印结果：
+```objectivec
+2018-12-08 18:30:03.304124+0800 iOS底层原理总结[56926:5718709] block -------__NSMallocBlock__
+2018-12-08 18:30:03.304246+0800 iOS底层原理总结[56926:5718709] block -------__NSGlobalBlock
+2018-12-08 18:30:03.304333+0800 iOS底层原理总结[56926:5718709] block -------NSBlock
+2018-12-08 18:30:03.304401+0800 iOS底层原理总结[56926:5718709] block -------NSObject
+
+```
+
+从上面我们可以看到block都继承自NSBlock->NSObject:这也更加的验证了block是个对象
+
+## block有三种类型：
+```objectivec
+__NSGlobalBlock__ （ _NSConcreteGlobalBlock ）
+__NSStackBlock__ （ _NSConcreteStackBlock ）
+__NSMallocBlock__ （ _NSConcreteMallocBlock ）
+```
+我们通过代码验证这三种类型的不同：
+```objectivec
+
+- (void)blockType
+{
+	//1.内部没有调用外部任何变量的block
+	void (^block1)(void) = ^{
+		NSLog(@"hello");
+	};
+	
+	//2.调用外部变量的block
+	int a = 10;
+	void (^block2)(void) = ^{
+		NSLog(@"hello---%d",a);
+	};
+	
+	//3.直接调用block
+	
+	NSLog(@"block-type:%@----%@----%@",[block1 class],[block2 class],[^{NSLog(@"%d",a);} class]);
+}
+
+2018-12-08 18:39:52.097893+0800 iOS底层原理总结[59479:5737537] 
+block-type:__NSGlobalBlock__----__NSMallocBlock__----__NSStackBlock__
+
+```
+打印出来的类型和我们在源码中观察到的不一样？为什么：
+
+## block在内存中的存储
+block在内存是如何存储的？
+![block-memmory](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block4.png)
+
+>1.__NSGlobalBlock__直到程序结束后才会被收回，很少使用这样的block<br>
+>2.__NSStackBlokc__存放在栈中，栈中的内存是由系统自动分配和释放，在作用执行完之后会立即释放，在相同的作用域中定义并调用block似乎多次一举<br>
+>3.__NSMallocBlock__在平时编程中最常用的，存放在堆中的block需要程序员自己释放。
+
+## block是如何定义其类型
+![block-memmory](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block3.png)
+我们验证上面的结论：
+首先我们关闭ARC,因为ARC会自动帮我们进行很多处理：
+
+```objectivec
+// MRC环境！！！
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        // Global：没有访问auto变量：__NSGlobalBlock__
+        void (^block1)(void) = ^{
+            NSLog(@"block1---------");
+        };   
+        // Stack：访问了auto变量： __NSStackBlock__
+        int a = 10;
+        void (^block2)(void) = ^{
+            NSLog(@"block2---------%d", a);
+        };
+        NSLog(@"%@ %@", [block1 class], [block2 class]);
+        // __NSStackBlock__调用copy ： __NSMallocBlock__
+        NSLog(@"%@", [[block2 copy] class]);
+    }
+    return 0;
+}
+
+打印结果：
+__NSGlobalBlock__	__NSStackBlock__	__NSMallocBlock__
+
+```
+## 总结
+1.没有访问auto变量的block是 __NSGlobalBlock__ 类型的，存放在数据段中。访问了 auto变量的block是 __NSStackBlock__ 存放在栈中（因为出了作用域就会销毁，block也是一个对象）。__NSStackBlock__ 进行copy之后变成了 __NSMallocBlock__ 类型，并被copy到了堆中。<br>
+2.__NSGlobalBlock__ 类型的很少见，因为如果block不访问外界变量，直接通过函数实现就可以了，不需要block了。<br>
+3.__NSStackBlock__ 访问了外部变量，并且存放在栈中，栈里面的代码在作用域结束后就会被销毁，那么就有可能在block内存销毁之后采取调用它，这样就会有问题。<br>
+
+看下面的例子：
+```objectivec
+void (^block)(void);
+void test()
+{
+    // __NSStackBlock__
+    int a = 10;
+    block = ^{
+        NSLog(@"block---------%d", a);
+    };
+}
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        test();
+        block();
+    }
+    return 0;
+}
+
+打印结果：block----------272632488找不到了
+
+```
+
+看到a时一个不可控的值，是因为创建的block是 __NSStackBlock__ (自己思考为什么)因此block是存在栈中的，当test函数执行完之后，栈内存中的block占用的内存会被收回，因此就找不到数据a了；
+
+![stack](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/nsstackblock.png)
+
+为了避免这种情况发生，需要将block复制到堆中：
+```objectivec
+
+void (^block)(void);
+void test()
+{
+    // __NSStackBlock__
+    int a = 10;
+    block = ^{
+        NSLog(@"block---------%d", a);
+    };
+}
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        test();
+        block();
+    }
+    return 0;
+}
+
+打印结果：block----------10
+```
+其他类型的block调用copy会有什么结果呢？
+![stack](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block6.png)
+>⚠️ 因此在MRC开始时期，我们经常使用copy来保存block，将栈上的block复制到堆中，即使栈中的block销毁，堆上的block也不会销毁，需要我们自己销毁,<strong>但是在ARC环境下，xcode会自动给我们进行copy操作，使得block不会被销毁。
+
+# ARC帮你做了什么
+
+在ARC环境下，编译器会根据情况自动将栈上的block进行copy操作，将block复制到堆上。
+**什么情况下ARC会自动的进行copy操作？**
+以下代码是在ARC下进行的：
+
+## block作为函数返回值
+
+```objectivec
+typedef void (^Block)(void);
+Block myblock()
+{
+    int a = 10;
+    // 上文提到过，block中访问了auto变量，此时block类型应为__NSStackBlock__
+    Block block = ^{
+        NSLog(@"---------%d", a);
+    };
+    return block;
+}
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        Block block = myblock();
+        block();
+       // 打印block类型为 __NSMallocBlock__
+        NSLog(@"%@",[block class]);
+    }
+    return 0;
+}
+
+```
+输出结果：
+```objectivec
+block -- type: __NSMallocBlock__
+```
+1). 上面提到，如果block访问auto变量，block的类型为 __NSStackBlock__，但是上面的block为 __NSMallocBlock__类型，并且可以打印出变量a的值，这说明了block并没有被销毁。<br>
+2). block是经过copy操作可以变为__NSMallocBlock__类型,因此可以猜测ARC自动将我们的block进行copy操作，来保存block，并在适当的地方release.
+
+## 将block赋值给__strong指针
+
+block赋值强指针引用的时候，ARC也会自动对block进行一次copy操作。
+```objectivec
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        // block内没有访问auto变量
+        Block block = ^{
+            NSLog(@"block---------");
+        };
+        NSLog(@"%@",[block class]);
+        int a = 10;
+        // block内访问了auto变量，但没有赋值给__strong指针
+        NSLog(@"%@",[^{
+            NSLog(@"block1---------%d", a);
+        } class]);
+        // block赋值给__strong指针
+        Block block2 = ^{
+          NSLog(@"block2---------%d", a);
+        };
+        NSLog(@"%@",[block1 class]);
+    }
+    return 0;
+}
+
+```
+打印结果：
+```objectivec
+__NSGlobalBlock__
+__NSStackBlock__
+__NSMallocBlock__
+```
+
+## block作为Cocoa API中的方法中含有usingBlock的时候
+例如：遍历函数：
+```objectivec
+NSArray *array = @[];
+[array enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            
+}];
+```
+
+## block作为GCD API的参数的时候
+比如GCD延时操作：
+```objectivec
+
+static dispatch_once_t onceToken;
+dispatch_once(&onceToken, ^{
+            
+});        
+dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            
+});
+
+```
+
+# block声明写法
+1. MRC环境下：
+```objectivec
+@property (nonmatic, copy) void (^block)(void);
+```
+2. ARC环境下：
+```objectivec
+@property (nonmatic, copy) void (^block)(void);
+@property (nonmatic, strong) void (^block)(void);
+```
+
+> [探寻block的本质](https://www.jianshu.com/p/c99f4974ddb5)
+
+# 附加题
+下面的block是否会捕获变量呢？
+
+```objectivec
 
 #import "Person.h"
 @implementation Person
@@ -358,7 +625,7 @@ int main(int argc, const char * argv[]) {
 
 查看C++代码
 
-```php
+```objectivec
 struct __BlockSelfObject__test_block_impl_0 {
   struct __block_impl impl;
   struct __BlockSelfObject__test_block_desc_0* Desc;
@@ -384,14 +651,14 @@ static void __BlockSelfObject__test_block_func_0(struct __BlockSelfObject__test_
 }
 ```
 从源码我们可以看到self同样被block捕获，同时我们看到test方法默认传递了两个参数cmd 和 self，而类方法也传递了两个参数cmd 和self。
-```php
+```objectivec
 static void _C_BlockSelfObject_test2(Class self, SEL _cmd) {
  NSLog((NSString *)&__NSConstantStringImpl__var_folders_82__00fdxvn217fjfl3my96zr0509801s_T_BlockSelfObject_5c7c2d_mi_1);
 }
 
 ```
 ** ⚠️不论是对象方法还是类方法self都作为参数传递给方法内部，既然作为参数传入，那么self就是是局部变量。下面看看在block中使用成员变量和属性有什么不同？**
-```php
+```objectivec
 
 - (void)test
 {
@@ -404,7 +671,7 @@ static void _C_BlockSelfObject_test2(Class self, SEL _cmd) {
 }
 ```
 
-```php
+```objectivec
 struct __BlockSelfObject__test_block_impl_0 {
   struct __block_impl impl;
   struct __BlockSelfObject__test_block_desc_0* Desc;
@@ -429,271 +696,6 @@ static void __BlockSelfObject__test_block_func_0(struct __BlockSelfObject__test_
  成员变量直接通过地址获取
 ```
 ** ⚠️结论：<strong>即使block使用的是实例对象的属性，block捕获仍然是实例对象而非属性，并通过实例对象不同方法获取属性（属性调用get方法，通过方法选择器获取name，成员变量直接通过地址获取） </strong>**
- 
-## block的类型
-
-block是什么类型？在前面的源代码里看到isa指向了_NSConcreateStackBlock对象，那么block是不是就是_NSConcreateStackBlock类型？？？
-```php
-int main(int argc, const char * argv[]) {
-@autoreleasepool {
-    // __NSGlobalBlock__ : __NSGlobalBlock : NSBlock : NSObject
-    void (^block)(void) = ^{
-        NSLog(@"Hello");
-    };
-    
-    NSLog(@"%@", [block class]);
-    NSLog(@"%@", [[block class] superclass]);
-    NSLog(@"%@", [[[block class] superclass] superclass]);
-    NSLog(@"%@", [[[[block class] superclass] superclass] superclass]);
-}
-return 0;
-}
-```
-打印结果：
-```php
-2018-12-08 18:30:03.304124+0800 iOS底层原理总结[56926:5718709] block -------__NSMallocBlock__
-2018-12-08 18:30:03.304246+0800 iOS底层原理总结[56926:5718709] block -------__NSGlobalBlock
-2018-12-08 18:30:03.304333+0800 iOS底层原理总结[56926:5718709] block -------NSBlock
-2018-12-08 18:30:03.304401+0800 iOS底层原理总结[56926:5718709] block -------NSObject
-
-```
-
-从上面我们可以看到block都继承自NSBlock->NSObject:这也更加的验证了block是个对象
-
-### block有三种类型：
-```php
-__NSGlobalBlock__ （ _NSConcreteGlobalBlock ）
-__NSStackBlock__ （ _NSConcreteStackBlock ）
-__NSMallocBlock__ （ _NSConcreteMallocBlock ）
-```
-我们通过代码验证这三种类型的不同：
-```php
-
-- (void)blockType
-{
-	//1.内部没有调用外部任何变量的block
-	void (^block1)(void) = ^{
-		NSLog(@"hello");
-	};
-	
-	//2.调用外部变量的block
-	int a = 10;
-	void (^block2)(void) = ^{
-		NSLog(@"hello---%d",a);
-	};
-	
-	//3.直接调用block
-	
-	NSLog(@"block-type:%@----%@----%@",[block1 class],[block2 class],[^{NSLog(@"%d",a);} class]);
-}
-
-2018-12-08 18:39:52.097893+0800 iOS底层原理总结[59479:5737537] 
-block-type:__NSGlobalBlock__----__NSMallocBlock__----__NSStackBlock__
-
-```
-打印出来的类型和我们在源码中观察到的不一样？为什么：
-
-### block在内存中的存储
-block在内存是如何存储的？
-![block-memmory](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block4.png)
-
-> 1.__NSGlobalBlock__直到程序结束后才会被收回，很少使用这样的block<br>
-> 2.__NSStackBlokc__存放在栈中，栈中的内存是由系统自动分配和释放，在作用执行完之后会立即释放，在相同的作用域中定义并调用block似乎多次一举<br>
-> 3.__NSMallocBlock__在平时编程中最常用的，存放在堆中的block需要程序员自己释放。
-
-### block是如何定义其类型
-![block-memmory](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block3.png)
-我们验证上面的结论：
-首先我们关闭ARC,因为ARC会自动帮我们进行很多处理：
-
-```php
-// MRC环境！！！
-int main(int argc, const char * argv[]) {
-    @autoreleasepool {
-        // Global：没有访问auto变量：__NSGlobalBlock__
-        void (^block1)(void) = ^{
-            NSLog(@"block1---------");
-        };   
-        // Stack：访问了auto变量： __NSStackBlock__
-        int a = 10;
-        void (^block2)(void) = ^{
-            NSLog(@"block2---------%d", a);
-        };
-        NSLog(@"%@ %@", [block1 class], [block2 class]);
-        // __NSStackBlock__调用copy ： __NSMallocBlock__
-        NSLog(@"%@", [[block2 copy] class]);
-    }
-    return 0;
-}
-
-打印结果：
-__NSGlobalBlock__	__NSStackBlock__	__NSMallocBlock__
-
-```
-## 总结
-1. 没有访问auto变量的block是 __NSGlobalBlock__ 类型的，存放在数据段中。访问了 auto变量的block是 __NSStackBlock__ 存放在栈中（因为出了作用域就会销毁，block也是一个对象）。__NSStackBlock__ 进行copy之后变成了 __NSMallocBlock__ 类型，并被copy到了堆中。<br>
-2. __NSGlobalBlock__ 类型的很少见，因为如果block不访问外界变量，直接通过函数实现就可以了，不需要block了。<br>
-3. __NSStackBlock__ 访问了外部变量，并且存放在栈中，栈里面的代码在作用域结束后就会被销毁，那么就有可能在block内存销毁之后采取调用它，这样就会有问题。<br>
-
-看下面的例子：
-```php
-void (^block)(void);
-void test()
-{
-    // __NSStackBlock__
-    int a = 10;
-    block = ^{
-        NSLog(@"block---------%d", a);
-    };
-}
-int main(int argc, const char * argv[]) {
-    @autoreleasepool {
-        test();
-        block();
-    }
-    return 0;
-}
-
-打印结果：block----------272632488找不到了
-
-```
-
-看到a时一个不可控的值，是因为创建的block是 __NSStackBlock__ (自己思考为什么)因此block是存在栈中的，当test函数执行完之后，栈内存中的block占用的内存会被收回，因此就找不到数据a了；
-
-![stack](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/nsstackblock.png)
-
-为了避免这种情况发生，需要将block复制到堆中：
-```php
-
-void (^block)(void);
-void test()
-{
-    // __NSStackBlock__
-    int a = 10;
-    block = ^{
-        NSLog(@"block---------%d", a);
-    };
-}
-int main(int argc, const char * argv[]) {
-    @autoreleasepool {
-        test();
-        block();
-    }
-    return 0;
-}
-
-打印结果：block----------10
-```
-其他类型的block调用copy会有什么结果呢？
-![stack](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block6.png)
->⚠️ 因此在MRC开始时期，我们经常使用copy来保存block，将栈上的block复制到堆中，即使栈中的block销毁，堆上的block也不会销毁，需要我们自己销毁,<strong>但是在ARC环境下，xcode会自动给我们进行copy操作，使得block不会被销毁。
-
-## ARC帮你做了什么❓
-
-在ARC环境下，编译器会根据情况自动将栈上的block进行copy操作，将block复制到堆上。
-**什么情况下ARC会自动的进行copy操作？**
-以下代码是在ARC下进行的：
-### block作为函数返回值
-
-```php
-typedef void (^Block)(void);
-Block myblock()
-{
-    int a = 10;
-    // 上文提到过，block中访问了auto变量，此时block类型应为__NSStackBlock__
-    Block block = ^{
-        NSLog(@"---------%d", a);
-    };
-    return block;
-}
-int main(int argc, const char * argv[]) {
-    @autoreleasepool {
-        Block block = myblock();
-        block();
-       // 打印block类型为 __NSMallocBlock__
-        NSLog(@"%@",[block class]);
-    }
-    return 0;
-}
-
-```
-输出结果：
-```php
-block -- type: __NSMallocBlock__
-```
-1). 上面提到，如果block访问auto变量，block的类型为 __NSStackBlock__，但是上面的block为 __NSMallocBlock__类型，并且可以打印出变量a的值，这说明了block并没有被销毁。<br>
-2). block是经过copy操作可以变为__NSMallocBlock__类型,因此可以猜测ARC自动将我们的block进行copy操作，来保存block，并在适当的地方release.
-
-### 将block赋值给__strong指针
-
-block赋值强指针引用的时候，ARC也会自动对block进行一次copy操作。
-```php
-int main(int argc, const char * argv[]) {
-    @autoreleasepool {
-        // block内没有访问auto变量
-        Block block = ^{
-            NSLog(@"block---------");
-        };
-        NSLog(@"%@",[block class]);
-        int a = 10;
-        // block内访问了auto变量，但没有赋值给__strong指针
-        NSLog(@"%@",[^{
-            NSLog(@"block1---------%d", a);
-        } class]);
-        // block赋值给__strong指针
-        Block block2 = ^{
-          NSLog(@"block2---------%d", a);
-        };
-        NSLog(@"%@",[block1 class]);
-    }
-    return 0;
-}
-
-```
-打印结果：
-```php
-__NSGlobalBlock__
-__NSStackBlock__
-__NSMallocBlock__
-```
-
-### block作为Cocoa API中的方法中含有usingBlock的时候
-例如：遍历函数：
-```php
-NSArray *array = @[];
-[array enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            
-}];
-```
-
-### block作为GCD API的参数的时候
-比如GCD延时操作：
-```php
-
-static dispatch_once_t onceToken;
-dispatch_once(&onceToken, ^{
-            
-});        
-dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            
-});
-
-```
-
-# block声明写法：
-1. MRC环境下：
-```php
-@property (nonmatic, copy) void (^block)(void);
-```
-2. ARC环境下：
-```php
-@property (nonmatic, copy) void (^block)(void);
-@property (nonmatic, strong) void (^block)(void);
-```
-
-> [探寻block的本质](https://www.jianshu.com/p/c99f4974ddb5)
-
-
 
 
 

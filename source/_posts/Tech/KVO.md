@@ -9,7 +9,7 @@ tags:
   - KVO
 ---
 
-# 如何使用KVO?
+# 如何使用KVO
 
 ```objectivec
 KVOPerson *kvoPerson1 = [[KVOPerson alloc] init];
@@ -31,11 +31,11 @@ kvoPerson2.age = 12;
 iOS用什么方式实现对一个对象的KVO？（KVO的本质是什么？
 如何手动触发KVO?
 
-## 探究KVO底层实现原理
+# 探究KVO底层实现原理
 **从代码中可以看到，只要属性值发生变化，就会触发我们的监听回调**
 即使我们重写age属性值，监听回调也可以正常运行。
 
-### KVO底层实现分析
+## KVO底层实现分析
 
 通过对上面的代码，我们分析发现kvoPerson2在添加kvo之后发生了变化，我们通过断点来查看这两个对象的isa即类对象，根据一个类的类对象唯一性，kvoPerson1 和kvoPerson2的类对象
 
@@ -136,8 +136,8 @@ NSLog(@"添加KVO监听之后 - p1 = %p, p2 = %p", [kvoPerson1 methodForSelector
 
 ![use-kvo](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/kvo-setage.png)
 
-1.重写了setAge方法
-2.重写了class方法
+**1.重写了setAge方法**
+**2.重写了class方法**
 
 NSKVONotifyin_Person重写class方法是为了隐藏NSKVONotifyin_Person。不被外界所看到。我们在p1添加过KVO监听之后，分别打印p1和p2对象的class可以发现他们都返回Person。如果NSKVONotifyin_Person不重写class方法，那么当对象要调用class对象方法的时候就会一直向上找来到nsobject，而nsobect的class的实现大致为返回自己isa指向的类，返回p1的isa指向的类那么打印出来的类就是NSKVONotifyin_Person
 猜测NSKVONotifyin_Person内重写的class内部实现大致为：
