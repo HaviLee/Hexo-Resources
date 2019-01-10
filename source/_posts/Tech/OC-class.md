@@ -1,6 +1,6 @@
 
 ---
-title: OC Class本质探究
+title: Class本质探究
 date: 2017-01-12 13:47:40
 categories: 
   - Tech
@@ -16,7 +16,7 @@ tags:
 ‼️无论类对象还是元类对象，类型都是Class类型；而其底层是objc_class结构体的指针，内存中就是结构体！
 首先任何对象都是继承自NSObject;NSObject结构是：
 
-```php
+```cpp
 @interface NSObject <NSObject> {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-interface-ivars"
@@ -27,7 +27,7 @@ tags:
 ## class C++结构
 Xcode对一个对象编译后为C++代码：
 
-```php
+```cpp
 struct Student_IMPL {
     struct NSObject_IMPL NSObject_IVARS;
     int _no;
@@ -40,14 +40,14 @@ struct Student_IMPL {
 ## class结构
 可以看到NSObject有个属性指向他们的类Class：下面来看下Class的结构：
 
-```php
+```cpp
 typedef struct objc_class *Class;
 ```
 
 在底层Class是一个objc_class的struct；我们继续看objc_class的结构：
 这是objc2之后的Class结构
 
-```php
+```cpp
 struct objc_class : objc_object {
     // Class ISA;
     Class superclass;          // 
@@ -67,7 +67,7 @@ struct objc_class : objc_object {
 
 我们发现objc_class继承自objc_object;那么objc_object是什么？
 
-```php
+```cpp
 struct objc_object {
 private:
     isa_t isa;
@@ -86,15 +86,15 @@ public:
 从这里我们发现在类对象中也有一个isa指针；
 
 > 那么在类中的成员变量，实例方法，属性都放在哪里？
-> ```php
-> struct class_rw_t { //这是一个readWrite
->     // Be warned that Symbolication knows the layout of this structure.
->     uint32_t flags; //
->     uint32_t version;
->     const class_ro_t *ro; //这里还有一个
->     method_array_t methods; //存放方法列表
->     property_array_t properties;  //属性列表
->     protocol_array_t protocols; //协议列表
+```cpp
+struct class_rw_t { //这是一个readWrite
+    // Be warned that Symbolication knows the layout of this structure.
+    uint32_t flags; //
+    uint32_t version;
+    const class_ro_t *ro; //这里还有一个
+    method_array_t methods; //存放方法列表
+    property_array_t properties;  //属性列表
+    protocol_array_t protocols; //协议列表
 
     Class firstSubclass;
     Class nextSiblingClass;
@@ -106,7 +106,7 @@ public:
 
 ```
 下面注意看：const class_ro_t *ro;
-```php
+```cpp
 struct class_ro_t {
     uint32_t flags;
     uint32_t instanceStart;
