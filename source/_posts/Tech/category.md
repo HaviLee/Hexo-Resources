@@ -425,9 +425,9 @@ else {
 }
 ```
 上述源代码中有两个重要的数组
->array()->lists： 类对象原来的方法列表，属性列表，协议列表。<br>
->addedLists：传入所有分类的方法列表，属性列表，协议列表。<br>
->attachLists函数中最重要的两个方法为memmove内存移动和memcpy内存拷贝。我们先来分别看一下这两个函数<br>
+>array()->lists： 类对象原来的方法列表，属性列表，协议列表。
+>addedLists：传入所有分类的方法列表，属性列表，协议列表。
+>attachLists函数中最重要的两个方法为memmove内存移动和memcpy内存拷贝。我们先来分别看一下这两个函数
 
 ```objectivec
 // memmove ：内存移动。
@@ -473,9 +473,9 @@ memcpy(array()->lists, addedLists,
 ![memmove](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/array-move.png)
 
 可以看到之前的指针并没有改变，至始至终都指向开头的位置。并且经过了memmove和memcpy之后，分类的方法，属性，协议被放到了类对象原本的方法，属性，协议列表前面。
-<br>
+
 <strong>‼️为什么将分类的方法追加到本来的对象方法列表的前面呢？这样做是为了保证分类方法优先调用。我们一般认为分类重写本类方法的时候，会覆盖本类的方法，
-其实并不是覆盖，只是优先调用，本类的方法仍然在内存中。</strong><br>
+其实并不是覆盖，只是优先调用，本类的方法仍然在内存中。</strong>
 下面我们验证下分类不是覆盖本类方法，只是优先调用：打印所有类的所有方法：
 ```objectivec
 
@@ -509,13 +509,13 @@ memcpy(array()->lists, addedLists,
 }
 
 ```
-> 2018-12-06 20:31:57.162771+0800 iOS底层原理总结[49992:3220836] person (test2) run<br>
+> 2018-12-06 20:31:57.162771+0800 iOS底层原理总结[49992:3220836] person (test2) run
 2018-12-06 20:31:57.162918+0800 iOS底层原理总结[49992:3220836] CategoryPerson - test--- run--- run--- setAge:--- age---
 
 ## 总结
 **Q:Category的实现原理？以及为什么Category中只能添加方法不能添加属性？**
 
-A:Category的实现原理就是将Category中的对象方法，协议，属性存放到category_t结构体中，然后将结构体中的方法列表拷贝到类对象的方法列表中。<br>
+A:Category的实现原理就是将Category中的对象方法，协议，属性存放到category_t结构体中，然后将结构体中的方法列表拷贝到类对象的方法列表中。
 Category中可以添加属性，但是不能帮你自动生成成员变量和get/set方法。因为在category_t结构体中并不存在成员变量。而且前面分析，‼️成员变量是存在实例对象里面的，这个是在编译的时候就已经决定的。而分类是在运行时才去加载的。所以我们无法再程序运行的时候讲分类的成员变量添加到实例对象的结构体中。因此说分类不可以添加实例变量。
 
 # load和Initialize区别
