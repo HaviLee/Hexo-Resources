@@ -8,15 +8,15 @@ tags:
   - Runtime
 ---
 
-# 1.方法调用本质
+# 方法调用本质
 
 首先我们通过一段代码来看看方法调用转为C++是什么样子：
 
-```php
+```objectivec
 xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc main.m
 ```
 
-```php
+```objectivec
 [person test];
 //  --------- c++底层代码
 ((void (*)(id, SEL))(void *)objc_msgSend)((id)person, sel_registerName("test"));
@@ -26,19 +26,17 @@ xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc main.m
 
 在方法调用的过程中可以分为三个阶段：
 
-1. **消息发送阶段：** 负责从类及父类的缓存列表及方法列表中找到方法。
-
-2. **动态解析阶段**：如果消息发送阶段没有找到方法，则会进入动态解析阶段，负责动态的添加方法实现。
-
-3. **消息转发阶段**：如果也没有实现动态解析方法，则会进行消息转发阶段，将消息转发给可以处理消息的接收者来处理。
+1.**消息发送阶段：** 负责从类及父类的缓存列表及方法列表中找到方法。
+2.**动态解析阶段**：如果消息发送阶段没有找到方法，则会进入动态解析阶段，负责动态的添加方法实现。
+3.**消息转发阶段**：如果也没有实现动态解析方法，则会进行消息转发阶段，将消息转发给可以处理消息的接收者来处理。
 
 如果消息转发也没有实现，就会报方法找不到的错误，无法识别消息：`unrecognzied selector sent to instance`
 
-# 2.消息发送
+# 消息发送
 
 在runtime源码中搜索`_objc_msgsent`查看内部实现:
 
-```php
+```objectivec
 /********************************************************************
  *
  * id objc_msgSend(id self, SEL _cmd, ...);
@@ -120,13 +118,11 @@ LReturnZero:
 
 下面是汇编语言中**___objc_msgSend** 的运行流程：
 
-![image](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/runtime3-1.png)
+![image](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/runtime3-1.png)
 
-## 1）方法查找
+## _class_lookupMethodAndLoadCache3函数
 
-### _class_lookupMethodAndLoadCache3函数
-
-```php
+```objectivec
 /***********************************************************************
 * _class_lookupMethodAndLoadCache.
 * Method lookup for dispatchers ONLY. OTHER CODE SHOULD USE lookUpImp().
@@ -140,9 +136,9 @@ IMP _class_lookupMethodAndLoadCache3(id obj, SEL sel, Class cls)
 }
 ```
 
-### lookUpImpOrForward函数
+## lookUpImpOrForward函数
 
-```php
+```objectivec
 /***********************************************************************
 * lookUpImpOrForward.
 * The standard IMP lookup. 
@@ -277,11 +273,11 @@ IMP lookUpImpOrForward(Class cls, SEL sel, id inst,
 }
 ```
 
-### getMethodNoSuper_nolock函数
+## getMethodNoSuper_nolock函数
 
 方法列表中查找方法：
 
-```php
+```objectivec
 static method_t *
 getMethodNoSuper_nolock(Class cls, SEL sel)
 {
@@ -306,9 +302,9 @@ getMethodNoSuper_nolock(Class cls, SEL sel)
 
 上面的代码中`getMethodNoSuper_nolock`函数中通过遍历方法列表拿到`method_list_t`最终通过`search_method_list`查找方法。
 
-### **`search_method_list`函数**
+## `search_method_list`函数
 
-```php
+```objectivec
 static method_t *search_method_list(const method_list_t *mlist, SEL sel)
 {
     int methodListIsFixedUp = mlist->isFixedUp();
@@ -326,9 +322,9 @@ static method_t *search_method_list(const method_list_t *mlist, SEL sel)
 }
 ```
 
-### **`findMethodInSortedMethodList`函数内二分查找实现原理**
+## `findMethodInSortedMethodList`函数内二分查找实现原理
 
-```php
+```objectivec
 static method_t *findMethodInSortedMethodList(SEL key, const method_list_t *list)
 {
     assert(list);
@@ -366,15 +362,15 @@ static method_t *findMethodInSortedMethodList(SEL key, const method_list_t *list
 
 上面的函数就是`_class_lookupMethodAndLoadCache3`的整个发送流程：
 
-![image](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/runtime3-2.png)
+![image](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/runtime3-2.png)
 
 如果没有找到方法，下面就会进入动态解析阶段。
 
-## 2）动态解析阶段
+# 动态解析阶段
 
 当本类包括父类`cache`以及`class_rw_t`中都找不到方法时，就会进入动态解析阶段。我们来看动态解析的源代码。
 
-```php
+```objectivec
 
     // No implementation found. Try method resolver once.
 
@@ -389,9 +385,9 @@ static method_t *findMethodInSortedMethodList(SEL key, const method_list_t *list
     }
 ```
 
-#### `**_class_resolveMethod**`函数内部，根据类对象或元类对象做不同的操作
+**`**_class_resolveMethod**`函数内部，根据类对象或元类对象做不同的操作**
 
-```php
+```objectivec
 
 /***********************************************************************
 * _class_resolveMethod
@@ -420,17 +416,16 @@ void _class_resolveMethod(Class cls, SEL sel, id inst)
 
 上面的代码可以知道，动态解析之后，会把`triedResolver = YES`,那么下次的时候就不会再进行动态解析了，之后会进行`retry`把方法查找流程重走一遍。也就是无论动态解析是否成功，`retry`之后都不会再进行动态解析了。
 
-### 3) 如何动态解析方法
+**如何动态解析方法**
 
-1. **动态解析对象方法：**使用`+(BOOL)resolveInstanceMethod:(SEL)sel`
+1.**动态解析对象方法：**使用`+(BOOL)resolveInstanceMethod:(SEL)sel`
+2.**动态解析类方法：**使用`+(BOOL)resolveClassMethod:(SEL)sel`
 
-2. **动态解析类方法：**使用`+(BOOL)resolveClassMethod:(SEL)sel`
-
-#### 1. 动态解析实例方法
+## 动态解析实例方法
 
 下面是一个动态解析的代码示例：
 
-```php
+```objectivec
 @implementation Person
 - (void) other {
     NSLog(@"%s", __func__);
@@ -477,7 +472,7 @@ int main(int argc, const char * argv[]) {
 
 首先来看下`class_addMethod`参数意义：
 
-```php
+```objectivec
 /** 
      第一个参数： cls:给哪个类添加方法
      第二个参数： SEL name:添加方法的名称
@@ -489,14 +484,14 @@ class_addMethod(__unsafe_unretained Class cls, SEL name, IMP imp, const char *ty
 
 需要注意的是在上面的代码中`class_getInstanceMethod`获取`Method`的方法：
 
-```php
+```objectivec
 // 获取其他方法 指向method_t的指针
 Method otherMethod = class_getInstanceMethod(self, @selector(other));
 ```
 
 其实Method是`objc_method`类型的结构体，可以理解为其内部结构同`method_t`相同，上文中的`method_t`是代表方法的结构体，其内部包含`SEL,type,IMP`，我们可以通过自定义`method__t`结构体，将objc_method强制转化为`method_t`来查看方法是否可以动态添加成功。
 
-```php
+```objectivec
 struct method_t {
     SEL sel;
     char *types;
@@ -536,7 +531,7 @@ struct method_t {
 
 另外上述代码中我们通过`method_getImplementation`函数和`method_getTypeEncoding`函数获取方法的`imp`和`type`。当然我们也可以通过自己写的方式来调用，这里以动态添加有参数的方法为例。
 
-```php
+```objectivec
 +(BOOL)resolveInstanceMethod:(SEL)sel
 {
     if (sel == @selector(eat:)) {
@@ -554,11 +549,11 @@ void cook(id self ,SEL _cmd,id Num)
 
 上述代码中当调用`eat:`方法时，动态添加了`cook`函数作为其实现并添加id类型的参数。
 
-#### 2. 动态解析类方法
+## 动态解析类方法
 
 动态解析类方法的时候，就会调用`+(BOOL)resolvedClassMethod:(SEL)sel`函数，而我们知道类方法时存在元类对象里，因此`cls`第一个对象需要传入远元类对象：
 
-```php
+```objectivec
 void other(id self, SEL _cmd)
 {
     NSLog(@"other - %@ - %@", self, NSStringFromSelector(_cmd));
@@ -577,15 +572,15 @@ void other(id self, SEL _cmd)
 
 在上面的源码中，我们无论是否实现了动态解析的方法，系统内部都会执行`retry`对方法进行再次查找，那么如果我们实现了动态解析方法，此时就会顺利找到方法，进而返回方法`imp`进行调用。如果没有实现动态解析方法，就会进行消息转发。
 
-![image](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/runtime3-3.png)
+![image](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/runtime3-3.png)
 
 
-
-# 3.消息转发
+# 消息转发
 
 如果我们没有对方法进行动态解析，就会进行消息转发：
 
-```php
+## 实例方法消息转发
+```objectivec
 imp = (IMP)_objc_msgForward_impcache;
 cache_fill(cls, sel, imp, inst);
 ```
@@ -594,7 +589,7 @@ cache_fill(cls, sel, imp, inst);
 
 通过搜索找到`_objc_msgForward_impcache`函数实现，`_objc_msgForward_impcache`函数中调用了`_objc_msgForward`进而找到`_objc_forward_handler`.
 
-```php
+```objectivec
 STATIC_ENTRY __objc_msgForward_impcache
 	// No stret specialization.
 b	__objc_msgForward
@@ -630,7 +625,7 @@ void *_objc_forward_handler = (void*)objc_defaultForwardHandler;
 
  下面通过代码，首先创建`Car`类继承自`NSObject`,并且`Car`有一个`-(void)driving`方法，当`person`类实例对象失去了驾车的能力的时候，并且没有再开车过程中动态的学会驾车，那么此时只能讲开车的消息转发给`car`，并且由`car`的实例对象来来帮助`person`对象驾车。
 
-```php
+```objectivec
 #import "Car.h"
 @implementation Car
 - (void) driving
@@ -680,7 +675,7 @@ int main(int argc, const char * argv[]) {
 
 如果`methodSignatureForSelector`返回为nil，就会来到`doseNotReconizeSelector`方法内部，程序会crash。
 
-```php
+```objectivec
 - (id)forwardingTargetForSelector:(SEL)aSelector
 {
     // 返回能够处理消息的对象
@@ -722,15 +717,15 @@ int main(int argc, const char * argv[]) {
 // 消息转发[5781:2164454] car driving
 ```
 
-![image](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/runtime3.4.png)
+![image](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/runtime3.4.png)
 
-## 1）NSInvocation
+### NSInvocation
 
 `methodSignatureForSelector`方法中返回的方法签名，在`forwardInvocation`中被包装成为`NSInvocation`对象，`NSInvocation`提供了获取和修改方法名、参数、返回值等方法，在`forwardInvocation`中我么可以对方法做最后的修改。
 
 同样的代码，我们为driving方法添加返回值和参数，并在`forwardInvocation`中修改方法的参数及返回值。
 
-```php
+```objectivec
 #import "Car.h"
 @implementation Car
 - (int) driving:(int)time
@@ -806,7 +801,7 @@ int main(int argc, const char * argv[]) {
 }
 ```
 
-```php
+```objectivec
 消息转发[6415:2290423] 修改前参数的值 = 100
 消息转发[6415:2290423] 修改前参数的值 = 110
 消息转发[6415:2290423] car driving 110
@@ -819,13 +814,13 @@ int main(int argc, const char * argv[]) {
 
 因此，只要来到方法`forwardInvocation`方法中，我们便对方法调用有了绝对的掌控权，可以选择是否调用方法，以及修改方法的返回值等。
 
-# 4.类方法的消息转发
+## 类方法的消息转发
 
 类方法消息转发同对象方法一样，同样需要经过消息发送，动态方法解析之后才会进行消息转发机制。我们知道类方法是存储在元类对象中的，元类对象本来也是一种特殊的类对象。需要注意的是，类方法的消息接受者变为类对象。
 
 **当类对象进行消息转发时，对调用相应的+号的`forwardingTargetForSelector、methodSignatureForSelector、forwardInvocation`方法，需要注意的是+号方法仅仅没有提示，而不是系统不会对类方法进行消息转发。**
 
-```php
+```objectivec
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         [Person driving];
@@ -874,3 +869,6 @@ int main(int argc, const char * argv[]) {
 // 打印结果
 // 消息转发[6935:2415131] car driving
 ```
+
+# 总结
+OC中的方法调用其实都是转成了objc_msgSend函数的调用，给receiver（方法调用者）发送了一条消息（selector方法名）。方法调用过程中也就是objc_msgSend底层实现分为三个阶段：**消息发送、动态方法解析、消息转发**。本文主要对这三个阶段相互之间的关系以及流程进行的探索。

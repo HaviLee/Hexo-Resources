@@ -8,17 +8,17 @@ tags:
   - Runtime
 ---
 
-## 一、Runtime简介
+# Runtime简介
 
 Runtime就是运行机制，OC就是运行时机制；对于C语言，函数在编译的时候就决定了调用哪个函数，如果调未实现的函数就会报错。但是OC属于动态调用过程，在编译的时候并不会决定真正的调用哪个函数，只有在真正运行的时候才会根据函数的名称找到函数对应的实现来调用，在编译阶段，OC可以调用任何函数，即使这个函数没有实现，只要声明了就可以。
 
-## 二、Runtime消息机制
+# Runtime消息机制
 
 消息机制是运行时里面最重要的机制，OC可以调用任何方法的调用，本质上都是发送消息。使用运行时,发送消息需要导入`<objc/message.h>`框架。⚠️在xcode5之后，苹果不建议使用底层方法，如果需要使用运行时，需要关闭严格检查`objc_msgSend`，在`buildSetting`中搜索`msg`设置为NO.
 
-实例方法底层调用：
+**实例方法底层调用：**
 
-```php
+```objectivec
 Person *p = [[Person alloc] init];
 [p eat];
 // 底层会转化成
@@ -30,9 +30,9 @@ objc_msgSend(p, @selector(eat));
 objc_msgSend(p, @selector(eat:),10);
 ```
 
-类方法底层调用：
+**类方法底层调用：**
 
-```php
+```objectivec
 // 本质是会将类名转化成类对象，初始化方法其实是在创建类对象。
 [Person eat];
 // Person只是表示一个类名，并不是一个真实的对象。只要是方法必须要对象去调用。
@@ -43,30 +43,30 @@ Class personclass = [Persion class];
 objc_msgSend(personclass, @selector(eat));
 ```
 
-#### 1.SEL是一个方法选择器
+## SEL是一个方法选择器
 
 SEL的主要作用就是快速的通过方法名字查找对应方法的函数指针，然后调用函数实现，SEL本身是一个`Int`类型的指针，地址中存放着方法的名字。
 
 **在一个类中，每个方法都有唯一对应的`SEL`,即使参数类型不同，对应的SEL也是相同的**
 
-#### 2.运行时发送消息的底层实现
+## 运行时发送消息的底层实现
 
 每一个类都有一个方法列表`Method-list`,保存了这个类里面所有的方法，根据`SEL`传入的`hash`值找到方法，相当于映射。
 
-![rs](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/rs-1.png)
+![rs](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/rs-1.png)
 
-#### 3.如何动态查找方法实现
+## 动态查找方法实现
 
 任何类都继承自`NSObject`，其有一个类型为`Class`的`isa`指针：
 
-```php
+```objectivec
 typedef struct objc_class *Class;
 @interface NSObject <NSObject> {
     Class isa  OBJC_ISA_AVAILABILITY;
 }
 ```
 
-```php
+```objectivec
 struct objc_class {
   Class isa; // 指向metaclass
 
@@ -82,29 +82,24 @@ struct objc_class {
 }
 ```
 
-1. 实例方法`[p eat]`；底层调用`[p performSelector:@selector(eat)]`方法，编译器将代码编译为cpp:`objc_msgSend(p, @selector(eat))`
+**方法调用流程**
+1.实例方法`[p eat]`；底层调用`[p performSelector:@selector(eat)]`方法，编译器将代码编译为cpp:`objc_msgSend(p, @selector(eat))`
+2.在`objc_msgSend`中，首先调用`p`的`isa`指针找到`p`对于的`class`.在`class`中先去cache中通过`SEL`查找对应的函数`method`,如果找到就直接执行。
+3.如果`cache`中没有，再去`methodList`中查找，如果找到，会将method进行缓存，方便下次调用。
+4.如果还没有找到，则沿着`superclass`查找。
+5.还没有的话，会调用动态添加方法查看有没有弥补
+6.动态添加方法没有实现,会进行消息转发。
+7.消息转发没有实现，最后会crash。
 
-2. 在`objc_msgSend`中，首先调用`p`的`isa`指针找到`p`对于的`class`.在`class`中先去cache中通过`SEL`查找对应的函数`method`,如果找到就直接执行。
-
-3. 如果`cache`中没有，再去`methodList`中查找，如果找到，会将method进行缓存，方便下次调用。
-
-4. 如果还没有找到，则沿着`superclass`查找。
-
-5. 还没有的话，会调用动态添加方法查看有没有弥补
-
-6. 动态添加方法没有实现,会进行消息转发。
-
-7. 消息转发没有实现，最后会crash。
-
-## 3、Runtime进行方法交换
+# Runtime进行方法交换
 
 **场景：系统自带的方法不够使用时，需要对系统方法进行扩展，并且保持原有的功能，可以使用runtime进行方法交换**
 
 下面实现`image`添加图片的时候，自动判断图片是否存在，如果不存在提示为空：
 
-#### 1）使用分类：
+## 使用分类
 
-```php
+```objectivec
 + (nullable UIImage *)xx_ccimageNamed:(NSString *)name
 {
     // 加载图片    如果图片不存在则提醒或发出异常
@@ -118,13 +113,13 @@ struct objc_class {
 
 缺点：使用的地方需要引用头文件，一旦有改动，代价很大。
 
-#### 2）runtime交换方法
+## runtime交换方法
 
 交换方法的本质是交换两个方法的实现，即调换`xx_imageName`和`imageName`方法，达到调用`xx_imageName`其实就是调用`imageName`的作用。
 
 那么在哪里交换比较合适？因为交换只做一次，因此放到分类`load`函数中最合适，当分类加载的时候交换方法即可。
 
-```php
+```objectivec
 +(void)load
 {
     // 获取要交换的两个方法
@@ -142,34 +137,33 @@ struct objc_class {
 
 交换方法的内部实现：
 
-1. 根据`SEL`在method中找到方法
+1.根据`SEL`在method中找到方法
+2.交换方法的实现。
 
-2. 交换方法的实现。
-
-![change](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/rs-2.png)
+![change](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/rs-2.png)
 
 ⚠️**注意：交换方法时候 xx_ccimageNamed方法中就不能再调用imageNamed方法了，因为调用imageNamed方法实质上相当于调用 xx_ccimageNamed方法，会循环引用造成死循环。**
 
 RunTime也提供了获取对象方法和方法实现的方法：
 
-```php
+```objectivec
 // 获取方法的实现
 class_getMethodImplementation(<#__unsafe_unretained Class cls#>, <#SEL name#>) 
 // 获取对象方法
 class_getInstanceMethod(<#__unsafe_unretained Class cls#>, <#SEL name#>)
 ```
 
-## 4、动态添加方法
+# 动态添加方法
 
 **如果一个类的方法非常多，其中有些方法暂时用不到。而加载类方法到内存中需要给每个方法生成映射表，但是又比较耗费资源，此时可以使用runtime动态添加方法**
 
 动态给某个类添加方法，相当于懒加载机制，类中有许多用不到的类，可以先不加载，等用到的时候再加载。
 
-动态添加方法：
+## 动态添加方法
 
 首先我们不实现对象方法，当调用`performSelector`的时候再动态的加载方法。
 
-```php
+```objectivec
 Person *p = [[Person alloc]init];
 // 当调用 P中没有实现的方法时，动态加载方法
 [p performSelector:@selector(eat)];
@@ -183,7 +177,7 @@ Person *p = [[Person alloc]init];
 
 首先我们来到API中看一下苹果的说明，搜索 Dynamic Method Resolution 来到动态方法解析。
 
-![a](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/rs-3.png)
+![a](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/rs-3.png)
 
 **Dynamic Method Resolution的API中已经讲解的很清晰，我们可以实现方法`resolveInstanceMethod:`或者`resolveClassMethod:`方法，动态的给实例方法或者类方法添加方法和方法实现。**
 
@@ -194,7 +188,7 @@ self : 方法调用者 _cmd : 调用方法编号。我们可以使用函数class
 
 这里仿照API给的例子，动态的为P实例添加eat对象
 
-```php
+```objectivec
 +(BOOL)resolveInstanceMethod:(SEL)sel
 {
     // 动态添加eat方法
@@ -214,13 +208,13 @@ self : 方法调用者 _cmd : 调用方法编号。我们可以使用函数class
 }
 ```
 
-**动态添加有参数的方法**  
+## 动态添加有参数的方法  
 如果是有参数的方法，需要对方法的实现和class_addMethod方法内方法类型参数做一些修改。  
 方法实现：因为在C语言函数中，所以对象参数类型只能用id代替。  
 方法类型参数：因为添加了一个id参数，所以方法类型应该为**`"v@:@"`**  
 来看一下代码:
 
-```php
+```objectivec
 +(BOOL)resolveInstanceMethod:(SEL)sel
 {
     if (sel == @selector(eat:)) {
@@ -236,19 +230,19 @@ void aaaa(id self ,SEL _cmd,id Num)
 }
 ```
 
-## 5.Runtime动态添加属性
+# Runtime动态添加属性
 
 首先看下对象和属性的关系：
 
-![image](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/rs-4.png)
+![image](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/rs-4.png)
 
 对象一开始初始化的时候其属性`name`为nil，给属性赋值就是让`name`属性指向一块存储字符串的内存，使得这个对象的属性和这块内存产生关联。
 
 那么如果想动态添加属性，其实就是动态的产生某种关联，而想要给系统动态的添加属性，只能通过分类：
 
-#### 1.通过使用静态全局变量给分类添加属性
+## 使用静态全局变量给分类添加属性
 
-```php
+```objectivec
 static NSString *_name;
 -(void)setName:(NSString *)name
 {
@@ -262,9 +256,9 @@ static NSString *_name;
 
 但是这样的话`name`只要程序运行，就会一直存在内存中。
 
-#### 2.使用Runtime
+## 使用Runtime
 
-```php
+```objectivec
 -(void)setName:(NSString *)name
 {
     objc_setAssociatedObject(self, @"name",name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -275,9 +269,9 @@ static NSString *_name;
 }
 ```
 
-1. 动态添加属性
+**1.动态添加属性**
 
-```php
+```objectivec
 objc_setAssociatedObject(id object, const void *key, id value, objc_AssociationPolicy policy);
 ```
 
@@ -287,7 +281,7 @@ objc_setAssociatedObject(id object, const void *key, id value, objc_AssociationP
 参数四：**`objc_AssociationPolicy policy`**: 策略，属性以什么形式保存。  
 有以下几种:
 
-```php
+```objectivec
 typedef OBJC_ENUM(uintptr_t, objc_AssociationPolicy) {
     OBJC_ASSOCIATION_ASSIGN = 0,  // 指定一个弱引用相关联的对象
     OBJC_ASSOCIATION_RETAIN_NONATOMIC = 1, // 指定相关对象的强引用，非原子性
@@ -297,9 +291,9 @@ typedef OBJC_ENUM(uintptr_t, objc_AssociationPolicy) {
 };
 ```
 
-2. 获得属性
+**2.获得属性**
 
-```php
+```objectivec
 objc_getAssociatedObject(id object, const void *key);
 ```
 
@@ -308,17 +302,17 @@ objc_getAssociatedObject(id object, const void *key);
 
 此时已经成功给NSObject添加name属性，并且NSObject对象可以通过点语法为属性赋值。
 
-```php
+```objectivec
 NSObject *objc = [[NSObject alloc]init];
 objc.name = @"xx_cc";
 NSLog(@"%@",objc.name);
 ```
 
-## 6.RunTime字典转模型
+# RunTime字典转模型
 
 通过给`NSObject`添加分类，声明并实现使用`Runtime`字典转模型的类方法：
 
-```php
+```objectivec
 + (instancetype)modelWithDict:(NSDictionary *)dict
 ```
 
@@ -332,19 +326,19 @@ NSLog(@"%@",objc.name);
 
 Runtime转字典的好处就是：当服务器返回很多数据的时候，而我们只需要其中一部分，没有用的属性就没有必要进行转化。
 
-### Runtime字典转模型过程
+**Runtime字典转模型过程**
 
 属性定义在类里面，那么类就有一个属性列表，属性列表以数组的形式存在，根据属性列表就可以获得类里面的所有属性，所以遍历属性列表，也可以遍历模型中所有的属性名：
 
-1.创建模型对象：
+**1.创建模型对象：**
 
-```php
+```objectivec
 id objc = [[self alloc] init];
 ```
 
-2.使用`class_copyIvarList`拷贝成员变量列表
+**2.使用`class_copyIvarList`拷贝成员变量列表**
 
-```php
+```objectivec
 unsigned int count = 0;
 Ivar *ivarList = class_copyIvarList(self, &count);
 ```
@@ -353,38 +347,38 @@ Ivar *ivarList = class_copyIvarList(self, &count);
 参数二：**`unsigned int *outCount`**: 无符号int型指针，这里创建unsigned int型count，&count就是他的地址，保证在方法中可以拿到count的地址为count赋值。传出来的值为成员属性总数。  
 返回值：**`Ivar *`**: 返回的是一个Ivar类型的指针 。指针默认指向的是数组的第0个元素，指针+1会向高地址移动一个Ivar单位的字节，也就是指向第一个元素。Ivar表示成员属性。
 
-3.遍历成员变量，获取属性列表：
+**3.遍历成员变量，获取属性列表：**
 
-```php
+```objectivec
 for (int i = 0 ; i < count; i++) {
         // 获取成员属性
         Ivar ivar = ivarList[i];
 }
 ```
 
-4.使用`ivar_getName(ivar)`获取属性名，因为成员变量属性名返回的是C语言字符串
+**4.使用`ivar_getName(ivar)`获取属性名，因为成员变量属性名返回的是C语言字符串**
 
-```php
+```objectivec
 NSString *propertyName = [NSString stringWithUTF8String:ivar_getName(ivar)]
 ```
 
-5.因为获得的成员属性名，是带有_的成员属性，所以需要将下划线去掉，
+**5.因为获得的成员属性名，是带有_的成员属性，所以需要将下划线去掉，**
 
-```php
+```objectivec
 // 获取key
 NSString *key = [propertyName substringFromIndex:1];
 ```
 
-6.获取字典中key对于的value
+**6.获取字典中key对于的value**
 
-```php
+```objectivec
 // 获取字典的value
 id value = dict[key];
 ```
 
-7.给模型赋值，并返回模型
+**7.给模型赋值，并返回模型**
 
-```php
+```objectivec
 if (value) {
  // KVC赋值:不能传空
 [objc setValue:value forKey:key];
@@ -392,22 +386,22 @@ if (value) {
 return objc;
 ```
 
-## 7.runtime转换模型二级转换
+# runtime转换模型二级转换
 
 在开发中经常遇到模型中嵌套一个模型。
 
-##### 1.首先获得一级模型中成员属性类型：
+ **1.首先获得一级模型中成员属性类型：**
 
-```php
+```objectivec
 // 成员属性类型
 NSString *propertyType = [NSString stringWithUTF8String:ivar_getTypeEncoding(ivar)];
 ```
 
-##### 2.判断当一级字典中value的值为字典，并且一级模型中的成员属性类型不是`NSDictionary`才需要进行转化
+**2.判断当一级字典中value的值为字典，并且一级模型中的成员属性类型不是`NSDictionary`才需要进行转化**
 
 首先value是dic才需要转换为模型，因为这个是我们的需求，另外成员变量不是系统类，说明成员变量是我们自定义的类，如果成员变量是Dic，说明我们本来就是想属性是一个字典，因此不要转换。
 
-```php
+```objectivec
 id value = dict[key];
 if ([value isKindOfClass:[NSDictionary class]] && ![propertyType containsString:@"NS"]) 
 { 
@@ -415,9 +409,9 @@ if ([value isKindOfClass:[NSDictionary class]] && ![propertyType containsString:
 }
 ```
 
-##### 3.获取需要转换的模型类型，这里需要对propertyType成员变量做处理，因为propertyType返回给我们的是成员`@\"mode"`，因此我们需要处理成mode
+**3.获取需要转换的模型类型，这里需要对propertyType成员变量做处理，因为propertyType返回给我们的是成员`@\"mode"`，因此我们需要处理成mode**
 
-```php
+```objectivec
 // @\"Mode\"去掉前面的@\"
 NSRange range = [propertyType rangeOfString:@"\""];
 propertyType = [propertyType substringFromIndex:range.location + range.length];
@@ -427,15 +421,15 @@ propertyType = [propertyType substringToIndex:range.location];
 
 ```
 
-##### 4.获取需要转换的类对象，将字符串转化为类名
+**4.获取需要转换的类对象，将字符串转化为类名**
 
-```php
+```objectivec
 Class modelClass =  NSClassFromString(propertyType);
 ```
 
-##### 5.判断如果类名不为则调用`modelWithDic`进行二级转化，返回二级模型给value
+**5.判断如果类名不为则调用`modelWithDic`进行二级转化，返回二级模型给value**
 
-```php
+```objectivec
 if (modelClass) {
       value =  [modelClass modelWithDict:value];
 }  
@@ -443,7 +437,7 @@ if (modelClass) {
 
 完整的：
 
-```php
+```objectivec
 + (instancetype)modelWithDict:(NSDictionary *)dict{
     // 1.创建对应类的对象
     id objc = [[self alloc] init];

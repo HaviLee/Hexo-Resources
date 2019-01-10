@@ -14,8 +14,8 @@ tags:
 
 现在OC对象的isa指针并不是直接的指向类对象或者元类对象，而是需要经过[&ISA_MASK]()通过运算才能获得类对象或者元类对象的地址。下面讨论apple为什么这样做？
 
-## 一、重温源码中isa指针，看看isa指针的本质。
-```php
+重温源码中isa指针，看看isa指针的本质。
+```objectivec
 任何一个对象C++结构：
 
 struct AnyObject_IMPL {
@@ -31,7 +31,7 @@ struct NSObject_IMPL {
 
 可以看到每个对象都有一个isa指针：
 
-```php
+```objectivec
 typedef struct objc_class *Class;
 
 struct objc_class : objc_object {
@@ -59,7 +59,7 @@ private:
 ```
 
 下面是重点：isa_t是一个union：
-```php
+```objectivec
 union isa_t 
 {
     isa_t() { }
@@ -70,12 +70,12 @@ union isa_t
     ....
 ```
 
-## 前景铺垫：
+**前景铺垫：**
 上述的代码中isa_t是union类型，union表示共用体。可以看到共用体内有一个结构体，结构体内定义了一些变量，变量后面的值代表了改变量占用的多少个二进制位，也就是位域技术。
 
-#### 1.位域技术：
+## 位域技术
 1）定义方式：
-```php
+```objectivec
 位域定义与结构定义相仿，其形式为：
 struct 位域结构名
 {
@@ -91,17 +91,16 @@ struct bs
     int b:2;
     int c:6;
 };
-
 ```
 type只能为int，unsigned int，signed int，char, unsigned char 五种类型之一，digits表示该位段所占的二进制位数；<br>
 位段长度digits不能超过类型type对应的数据类型占用的大小，如若type为char，则digits不能超过8，为int则digits不能超过32
-#### [位域在本质上就是一种结构类型， 不过其成员是按二进位分配的。]()
+**[位域在本质上就是一种结构类型， 不过其成员是按二进位分配的。]()**
 [详细请参考](https://www.jianshu.com/p/0481a7b551b8)
 [isa](http://www.cocoachina.com/ios/20160503/16060.html)
 
-#### 2.共用体
+## 共用体
 在进行某些算法的C语言编程的时候，需要使用几种不同类型的变量存放到同一端内存中。也称为覆盖技术，几个变量相互覆盖。这几种变量共同占用一段内存，这称为共用体。
-```php
+```objectivec
 (lldb) p/x &bf
 (HGBitFiled *) $1 = 0x00007ffee8d55978
 (lldb) x 0x00007ffee8d55978
@@ -112,10 +111,9 @@ type只能为int，unsigned int，signed int，char, unsigned char 五种类型�
 ```
 
 
-## 二、探寻Apple为什么使用共用体及其好处
-### 1. 模仿底层的做法：
+# 探寻过程
 
-```php
+```objectivec
 @interface Person : NSObject
 
 @property (nonatomic, assign, getter=isTall) BOOL tall;
@@ -142,25 +140,23 @@ int main(int argc, const char * argv[]) {
 
 从上面看出使用属性的方法肯定不行，这样会占用3个内存空间。
 
-### 解决思路
+## Char占一个字节
 
-#### 1.如何表示：添加一个char类型的成员变量，char类型占据一个字节的内存空间，也就是8个二进制位，然后使用最后的3个二进制位存储3个bool值。
-
-```php
+```objectivec
 @interface Person()
 {
    char _tallRichHandsome;
 }
 ```
 例如<strong>_tallRichHandsome的值为 0b 0000 0010</strong>那么只是用二进制位的后三位表示，分别为其赋值0或者1来代表tall,rich,handsome的值。
-![isa](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/isa1.png)
+![isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/isa1.png)
 
-#### 2.如何取值
+## 如何取值
 那么我们如何去8个二进制中的某一位或者给其中的一位进行赋值呢？
 
 我们可以使用按位与取出响应位置的值。
 <strong>&: 按位与，同真为真，其他未假</strong>
-```php
+```objectivec
 // 示例
 // 取出倒数第三位 tall
   0000 0010
@@ -179,7 +175,7 @@ int main(int argc, const char * argv[]) {
 按位与可以取出特定的bit位，只需要将取出的bit位设置为1,其他位设定为0.
 
 对上面的代码进行优化：
-```php
+```objectivec
 #define TallMask 0b00000100
 #define RichMask 0b00000010
 #define HandsomeMask 0b00000001
@@ -201,7 +197,7 @@ int main(int argc, const char * argv[]) {
 ```
 在上面的代码中使用!!来讲二进制数转化为bool类型。
 
-```php
+```objectivec
 // 取出倒数第二位 rich
   0000 0010  // _tallRichHandsome
 & 0000 0010 // RichMask
@@ -214,21 +210,21 @@ int main(int argc, const char * argv[]) {
 
 为了能更清晰的表示掩码是为了取出哪一位，上面的三个宏可以使用[<<](左移)来优化。
 
-![isa](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/isa2.png)
+![isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/isa2.png)
 
 优化后：
-```php
+```objectivec
 #define TallMask 1<<2 //0b0000 0100 = 4
 #define RichMask 1<<1 //0b0000 0010 = 2
 #define HandsomeMask 1<<0 //0
 ```
 
-#### 3.如何设值？
+## 如何设值
 <strong>我们可以使用[|(按位或)]() | :按位或，只要有一个为1就是1，否则为0</strong>
 
 如果想将某一位设为1，那么将原来的值和掩码进行按位或进行操作即可，例如将tall设置为1：
 
-```php
+```objectivec
 // 将倒数第三位 tall置为1
   0000 0010  // _tallRichHandsome
 | 0000 0100  // TallMask
@@ -238,7 +234,7 @@ int main(int argc, const char * argv[]) {
 
 如果想将某一位设为0，那么将掩码按位取反（~:按位取反）,然后在和原理的值进行按位取&操作。
 
-```php
+```objectivec
 // 将倒数第二位 rich置为0
   0000 0010  // _tallRichHandsome
 & 1111 1101  // RichMask按位取反
@@ -247,7 +243,7 @@ int main(int argc, const char * argv[]) {
 ```
 具体我们的set方法：
 
-```php
+```objectivec
 - (void)setTall:(BOOL)tall
 {
 	if (tall) {//如果设置值为1，只需要进行按位取或。
@@ -279,7 +275,7 @@ int main(int argc, const char * argv[]) {
 ```
 下面我们可以通过调用来：
 
-```php
+```objectivec
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         Person *person  = [[Person alloc] init];
@@ -293,19 +289,19 @@ int main(int argc, const char * argv[]) {
 ```
 
 打印结果：
-```php
+```objectivec
 Runtime - union探寻[58212:3857728] tall : 1, rich : 0, handsome : 1
 ```
 这样就自己实现了位域的功能；下面我们使用位域来优化：
 
-### 2.使用结构体位域
+## 位域
 位域声明 [位域名：位域长度]()
-> 1. 如果一个字节剩余的空间不够存放另一个位域的时候，应当从下一个字节单元开始存放该位域。也就是说可以有意使得某个位域从下一个单元开始。<br>
-2. 位域的长度不能大于数据类型本身的长度。比如int类型不能超过32位二进制位。<br>
-3. 位域可以无位域名，这时它只作为填充或者调整位置使用。无名的位域是无法使用的。
+1.如果一个字节剩余的空间不够存放另一个位域的时候，应当从下一个字节单元开始存放该位域。也就是说可以有意使得某个位域从下一个单元开始。<br>
+2.位域的长度不能大于数据类型本身的长度。比如int类型不能超过32位二进制位。<br>
+3.位域可以无位域名，这时它只作为填充或者调整位置使用。无名的位域是无法使用的。
 
 我们使用结构体位域进行优化：
-```php
+```objectivec
 @interface Person : NSObject
 {
 	struct {
@@ -319,7 +315,7 @@ Runtime - union探寻[58212:3857728] tall : 1, rich : 0, handsome : 1
 
 set和get方法可以通过结构体直接赋值；
 
-```php
+```objectivec
 - (BOOL)isTall
 {
 	return _tallRichHandsome.tall;
@@ -383,22 +379,22 @@ int main(int argc, const char * argv[]) {
 ```
 首先打个断点：查看
 
-![isa](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/isa3.png)
+![isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/isa3.png)
 
 因为_tallRichHandsome占据一个内存空间，也就是8个bits,我们将05十六进制转化为二进制：
 
-![isa](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/isa4.png)
+![isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/isa4.png)
 
 从上面的图中可以发现，倒数第三位也就是tall的值为1，倒数第二位也就是rich的值为0，倒数第一位的值就是handsome为1，这和我们设置的一样。下面我们打印内存：
 
-```php
+```objectivec
 Runtime - union探寻[59366:4053478] tall : 1, rich : 0, handsome : 1
 ```
 上面的问题：可读性好了，但是效率相比较直接使用位运算来说差很多，如果需要提高效率，需要使用共用体。
 
-### 2.共用体
+## 共用体
 下面使用共用体优化代码：
-```php
+```objectivec
 #define TallMask (1<<2) // 0b00000100 4
 #define RichMask (1<<1) // 0b00000010 2
 #define HandsomeMask (1<<0) // 0b00000001 1
@@ -466,9 +462,9 @@ Runtime - union探寻[59366:4053478] tall : 1, rich : 0, handsome : 1
 
 *****
 
-## isa_t源码
+# isa_t源码
 
-```php
+```objectivec
 union isa_t 
 {
     isa_t() { }
@@ -515,23 +511,23 @@ union isa_t
 
 上面的源码使用共用体存储了64位的值，这些值在结构体中被展示出来，占的二进制位，通过对bits进行位运算获取响应位置的值。
 
-#### ‼️重点：[shiftcls](),shiftcls中存储着存储着Class/Meta-Class对象的内存地址信息，我们之前知道，对象的isa指针需要和ISA_MASK进行一次&才能得出Class真正的Class对象的地址。
+**重点：[shiftcls](),shiftcls中存储着存储着Class/Meta-Class对象的内存地址信息，我们之前知道，对象的isa指针需要和ISA_MASK进行一次&才能得出Class真正的Class对象的地址。**
 
-![isa](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/isa-mask.png)
+![isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/isa-mask.png)
 
 下面我们查看ISA_MASK的值：[0x0000000ffffffff8]()：
 
-![isa](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/isa-mask-bits.png)
+![isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/isa-mask-bits.png)
 
 可以看到ISA_MASK转换为二进制后有33位都是1，所以使用按位与可以取出这33位中的值，因此按位与取出的就是Class或Meta-Class的值。同时可以看出ISA_MASK后三位是0，因此进行按位与之后得到的后三位必定为0，因此任何类对象的内存地址的最后三位转换为十六进制后最后一位必定为8或者0.
 
-## isa中存储的信息及作用：
+## isa中存储的信息及作用
 
 首先看下这个表：
-![isa](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/isa-bits.jpg)
+![isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/isa-bits.jpg)
 
 对应的isa源代码：
-```php
+```objectivec
 struct {
     // 0代表普通的指针，存储着Class，Meta-Class对象的内存地址。
     // 1代表优化后的使用位域存储更多的信息。
@@ -565,9 +561,9 @@ struct {
 
 ```
 
-### 验证各个位上的信息及作用
+## 验证isa_t
 
-```php
+```objectivec
 // 以下代码需要在真机中运行，因为真机中才是__arm64__ 位架构
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -580,28 +576,28 @@ struct {
 
 1.首先获取person 类对象的地址，然后通过断点打印person对象的isa指针地址。
 
-![isa](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/verify-isa1.png)
+![isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/verify-isa1.png)
 
 将类对象的地址转化为二进制：
 
-![isa](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/verify-isa2.png)
+![isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/verify-isa2.png)
 
 将person的isa指针转化为二级制：
 
-![isa](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/verify-isa3.png)
+![isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/verify-isa3.png)
 
 <strong>shiftcls</strong> shiftcls中存储类对象的地址，通过上面类对象地址和isa地址中的33位二进制内容完全符合。<br>
 <strong>extra_rc</strong> extra_rc的19位存储的值为引用计数，如果为1，那么person的引用计数为1，此时为0,表示person没有引用。<br>
 <strong>magic</strong> magic中存储的6位用于分辨对象对象是否初始化完成。上述代码的person初始化完成，那么此时这6位二进制中存储的值011010就是宏
 
-```php
+```objectivec
 #   define ISA_MAGIC_VALUE 0x000001a000000001ULL
 ```
 <strong>nonpointer</strong>这里肯定使用的是优化后的isa，因此nonpointer的值肯定为1.
 
 因为此时person的对象没有关联对象并且没有弱指针引用过，可以看出[has_assoc]()和[weak_referenced]()的值都是0，下面我们为person添加弱引用和关联对象，来观察下[has_assoc]()和[weak_referenced]()的值的变化。
 
-```php
+```objectivec
 - (void)viewDidLoad {
     [super viewDidLoad];
     Person *person = [[Person alloc] init];
@@ -617,13 +613,13 @@ struct {
 
 重新打印person的isa指针地址将其转换为二进制，可以看到[has_assoc]()和[weak_referenced]()的值都是1.
 
-![isa](https://github.com/Interview-Skill/OC-Class-Analysis/blob/master/Image/verify-isa4.png)
+![isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/verify-isa4.png)
 
-### ⚠️只要设置过关联对象和弱引用，对象的[has_assoc]()和[weak_referenced]()的值就是1，不论之后对象的关联对象是否设置为nil或者弱引用是否断开.
+**⚠️只要设置过关联对象和弱引用，对象的[has_assoc]()和[weak_referenced]()的值就是1，不论之后对象的关联对象是否设置为nil或者弱引用是否断开.**
 
 如果没有设置过关联对象，对象在释放的时候会更快，这是因为对象在销毁的时候会判断是否有关联对象，然后对关联对象进行释放。看下面的销毁代码：
 
-```php
+```objectivec
 void *objc_destructInstance(id obj) 
 {
     if (obj) {
