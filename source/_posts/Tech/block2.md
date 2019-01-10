@@ -12,7 +12,7 @@ tags:
 
 block在使用过程中一般都是对对象的捕获，那么对对象的捕获是不是和基础类型一样？当block访问的是对象类型的话，对象在什么时候销毁？
 
-## 查看block捕获对象类型的C++源码
+## block捕获对象类型的C++源码
 ```objectivec
 typedef void (^Block)(void);
 int main(int argc, const char * argv[]) {
@@ -78,9 +78,9 @@ block = [^{
 ‼️这是因为只要对栈空间的block进行一次copy就可以将block拷贝到堆中，person就不会被释放，这说明堆空间的block可能对person进行了一次retain操作，保障person不被销毁。堆空间的block自己销毁的时候会对持有的对象进行release操作。<br>
 ‼️也就是说栈空间上的block不会对对象强引用，堆空间的block有能力持有外部调用的对象，即对对象进行强引用操作。
 
-## 循环引用
 有可能造成的问题：循环引用，__weak：可以使得在作用域执行完结束后就销毁。
-### __weak
+
+## __weak
 ```objectivec
 typedef void (^Block)(void);
 
@@ -124,7 +124,7 @@ struct __BlockSelfObject__test_block_impl_0 {
 
 __weak修饰的变量，在生成的[__BlockSelfObject__test_block_impl_0]()中也会使用[__weak]()
 
-#### __BlockSelfObject__test_block_copy_0 和 __BlockSelfObject__test_block_dispose_0
+### __BlockSelfObject__test_block_copy_0 和 __BlockSelfObject__test_block_dispose_0
 
 当block中捕获对象类型的时候，block结构体__BlockSelfObject__test_block_impl_0的描述结构体 __BlockSelfObject__test_block_desc_0多了两个参数 [copy]() 和[dispose]().
 
@@ -146,14 +146,14 @@ static struct __BlockSelfObject__test_block_desc_0 {
 > copy本质就是 __main_block_copy_0 函数，__main_block_copy_0 函数内部调用 __Block_object_assign 函数，__Block_object_assign 中传入的是person对象的地址，person对象，以及8。<br>
 > dispose本质就是__main_block_dispose_0函数，__main_block_dispose_0函数内部调用_Block_object_dispose函数，_Block_object_dispose函数传入的参数是person对象，以及8。
 
-#### __Block_object_assign 函数的调用时机及作用
+### __Block_object_assign 函数的调用时机及作用
 
 当block进行copy操作的时候会自动调用 __BlockSelfObject__test_block_desc_0内部的__main_block_copy_0，__main_block_copy_0函数内部会调用
 __Block_object_assign函数。<br>
 
 ‼️__Block_object_assign函数会自动根据__main_block_impl_0结构体内部的person是什么类型的指针，对person对象产生强引用或者弱引用。可以理解为_Block_object_assign函数内部会对person进行引用计数器的操作，如果__main_block_impl_0结构体内person指针是__strong类型，则为强引用，引用计数+1，如果__main_block_impl_0结构体内person指针是__weak类型，则为弱引用，引用计数不变。
 
-#### __Block_object_dispose 函数调用时机及作用
+### __Block_object_dispose 函数调用时机及作用
 ‼️当block从堆中移除时就会自动调用__main_block_desc_0中的__main_block_dispose_0函数，__main_block_dispose_0函数内部会调用_Block_object_dispose函数。
 __Block_object_dispose会对person对象做释放操作，类似于release，也就是断开对person对象的引用，而person究竟是否被释放还是取决于person对象自己的引用计数。
 
@@ -165,9 +165,9 @@ __Block_object_dispose会对person对象做释放操作，类似于release，也
 
 ****
 
-# 问题
+## 举一反三
 **下面各个例子中Person对象何时销毁?**
-## 例子1
+### 例子1
 ```objectivec
 PersonOne *p = [PersonOne new];
 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -178,7 +178,7 @@ dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), di
 ```
 答：上面的代码在ARC环境中，Block作为GCD API的参数时会自动进行copy操作，因此block在堆空间，并且使用强引用访问person，因此block内部copy函数对person进行强引用，当block执行完后需要被销毁，调用dispose函数释放对person的引用，person没有强指针之后被销毁。
 
-## 例子2
+### 例子2
 ```objectivec
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
@@ -197,7 +197,7 @@ Person 先销毁再执行block，为null
 
 答：block对weakP为__weak弱引用，因此block内部copy函数对person同样进行的也是弱引用，当大括号执行结束时，person对象没有强指针引用被释放掉。因此block执行的时候打印为null
 
-## 例子3
+### 例子3
 ```objectivec
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
@@ -222,7 +222,7 @@ Person 先销毁再执行block，为null
 
 原因是person被强引用了，不会被立刻销毁。
 
-## 例子4
+### 例子4
 ```objectivec
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
@@ -268,7 +268,7 @@ int main(int argc, const char * argv[]) {
 默认情况下，block内部是不可以修改局部变量的。通过前面的分析我们知道基础类型是拷贝到block内部一份的。<br>
 > [age]()是在main函数内声明的，所以age是存在于函数main的栈空间的，但是block内部的代码在__main_block_func_o函数内部。__main_block_func_0函数内部是无法访问age变量的内存空间的，两个函数的栈空间不一样，__main_block_func_0拿到的age是block结构体内部的age（age被copy过来的），因此无法在__main_block_func_0函数内部修改main函数内的变量。<br>
 
-## age变量使用static修饰
+## 使用static修饰基础类型
 前面有提到<strong>static</strong>修饰的age变量传入block内部的时候是变量的指针，在__main_block_func_0内部可以拿到age变量的内存地址，因此可以直接修改。
 
 ## 使用__block修饰基础类型
@@ -376,7 +376,10 @@ int main(int argc, const char * argv[]) {
 
 *****
 
-# 下面的代码是否有问题？
+## 举一发三
+
+### 例子1
+**下面的代码是否可以正确的执行？**
 ```objectivec
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
@@ -396,7 +399,9 @@ int main(int argc, const char * argv[]) {
 答：上面的代码没有问题！因为block块中仅仅是<strong>使用了array的内存地址，往内存地址中添加内容，并没有修改array的内存地址，因此array可以不需要使用__block修饰</strong><br>
 ⚠️所以仅仅是使用局部变量的内存地址，而不是修改的时候，尽量不要添加__block，从源码看出，一旦添加了__block，编译器会创建响应的结构体，浪费内存。
 
-## 2.上面提到__block修饰的age变量在编译的时候会封装为结构体，那么当外部使用age的时候，使用的是__Block_byref_age_0结构体？还是使用__Block_byref_age_0结构体中的age变量？
+### 例子2 
+**上面提到__block修饰的age变量在编译的时候会封装为结构体，那么当外部使用age的时候，使用的是__Block_byref_age_0结构体？还是使用__Block_byref_age_0结构体中的age变量？**
+
 自定义结构体验证结构体内部结构
 ```objectivec
 typedef void (^Block)(void);
@@ -477,7 +482,7 @@ int main(int argc, const char * argv[]) {
 
 ‼️blcok内部决定什么时候讲变量复制到堆中，什么时候对变量进行引用计数操作
 
-## __block修饰的变量在block结构体中都是强引用，而其他类型的是由传入的对象的指针类型决定的。
+**__block修饰的变量在block结构体中都是强引用，而其他类型的是由传入的对象的指针类型决定的。**
 
 ```objectivec
 typedef void (^Block)(void);
@@ -533,10 +538,10 @@ struct __main_block_impl_0 {
 ```
 
 ‼️从上面可以可以看出：
-1. 没有使用[__block]()修饰的变量(object 和 weakObjc)是根据他们自身被block捕获的指针类型进行强引用或者弱引用。<br>
-2. 一旦使用了__blcok修饰的变量，在__main_block_impl_0内部一律使用强指针引用生成的结构体。
+1.没有使用[__block]()修饰的变量(object 和 weakObjc)是根据他们自身被block捕获的指针类型进行强引用或者弱引用。<br>
+2.一旦使用了__blcok修饰的变量，在__main_block_impl_0内部一律使用强指针引用生成的结构体。
 
-### 被__block修饰的变量生成的结构体有什么不同
+**被__block修饰的变量生成的结构体有什么不同?**
 
 ```objectivec
 struct __Block_byref_age_0 {
@@ -571,7 +576,7 @@ struct __Block_byref_weakPerson_2 {
 
 1.__block修饰的对象类型的变量生成的结构体内多了[__Block_byref_id_object_copy]（)和[__Block_byref_id_object_dispose]对包装的对象进行内存管理。
 
-2. 而生成的结构体对象的引用类型，则取决于block捕获的对象类型的变量的引用类型，weakPerson是弱引用，所以指针__Block_byref_weakPerson_2 对weakPerson是弱引用，person是强指针，所以__Block_byref_person_1对person是强引用。
+2.而生成的结构体对象的引用类型，则取决于block捕获的对象类型的变量的引用类型，weakPerson是弱引用，所以指针__Block_byref_weakPerson_2 对weakPerson是弱引用，person是强指针，所以__Block_byref_person_1对person是强引用。
 
 ```objectivec
 static void __main_block_copy_0(struct __main_block_impl_0*dst, struct __main_block_impl_0*src) {
@@ -599,7 +604,7 @@ static void __main_block_dispose_0(struct __main_block_impl_0*src) {
 
 ```
 
-### __forwarding指针
+## __forwarding指针
 
 上面看到__forwarding指针指向的是结构体自己。当使用变量的时候，通过结构体找到__forwarding指针，再通过__forwarding指针找到相应的变量。这样是为了方便内存管理。通过上面的__block变量的内存地址的分析，block被复制到堆上的时候，会将block中引用的变量也复制到堆中。
 

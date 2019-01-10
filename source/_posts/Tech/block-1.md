@@ -67,13 +67,13 @@ static void _I_HaviBlock_createBlock(HaviBlock * self, SEL _cmd) {//这个就是
 }
 
 ```
-## block变量定义
+## 定义block变量
 ```objectivec
 void(*block)(int, int) = ((void (*)(int, int))&__HaviBlock__createBlock_block_impl_0((void *)__HaviBlock__createBlock_block_func_0, &__HaviBlock__createBlock_block_desc_0_DATA, age));
 ```
 从上面的定义，block中调用了__HaviBlock__createBlock_block_impl_0函数，并且将__HaviBlock__createBlock_block_impl_0函数的地址赋值给了blcok.下面来看下__HaviBlock__createBlock_block_impl_0内部结构：
 
-## _block_impl_0内部结构体
+## block_impl_0内部结构体
 
 ```objectivec
 struct __HaviBlock__createBlock_block_impl_0
@@ -100,9 +100,8 @@ __HaviBlock__createBlock_block_impl_0构造函数有四个参数：
 3.int _age,
 4.int flags=0
 其中flag是具有默认值，这里的age则是表示传入_age参数赋值给age成员；<br>
-## block_impl_0参数
+### block_func_0
 
-### __HaviBlock__createBlock_block_func_0
 ```objectivec
 static void __HaviBlock__createBlock_block_func_0(struct __HaviBlock__createBlock_block_impl_0 *__cself, int a, int b) {
   int age = __cself->age; // bound by copy
@@ -113,7 +112,7 @@ static void __HaviBlock__createBlock_block_func_0(struct __HaviBlock__createBloc
 ```
 在这个函数中，首先取出age的值，紧接着可以看到两个熟悉的NSLog，这个就是我们再block中写下的代码。所以__HaviBlock__createBlock_block_func_0函数中其实保存着我们在block中写下的代码。__HaviBlock__createBlock_block_impl_0中传入的是__HaviBlock__createBlock_block_func_0，<strong> 就是说我们再block中写下的代码被封装成为__HaviBlock__createBlock_block_func_0</strong>并把__HaviBlock__createBlock_block_func_0函数的地址保存在__HaviBlock__createBlock_block_impl_0中。
 
-### __HaviBlock__createBlock_block_desc_0_DATA
+### block_desc_0_DATA
 ```objectivec
 
 static struct __HaviBlock__createBlock_block_desc_0 {
@@ -173,7 +172,6 @@ struct __block_impl {
 从这里__HaviBlock__createBlock_block_impl_0内部有一个isa指针，因此说明block本质上是一个OC对象。而在
 __HaviBlock__createBlock_block_impl_0 构造函数中传入的值存储在__HaviBlock__createBlock_block_impl_0结构体中，最后将改结构体的地址赋值给block。
 
-## 总结
 根据__HaviBlock__createBlock_block_impl_0三个参数的分析得出结论：<br>
 1.__block_impl结构体中的指针存储着&_NSConcreteStackBlock地址，可以暂时理解为类对象地址，block就是_NSConcreteStackBlock类型的。<br>
 2.block代码中的代码被封装成为__HaviBlock__createBlock_block_func_0，FuncPtr则存储着__HaviBlock__createBlock_block_func_0的地址<br>
@@ -192,7 +190,8 @@ __HaviBlock__createBlock_block_impl_0 构造函数中传入的值存储在__Havi
 
 FunPtr中存储着通过代码块封装的函数地址，那么调用这个函数，也就是执行代码快中的代码。回头看__HaviBlock__createBlock_block_func_0，可以发现第一个参数是_HaviBlock__createBlock_block_impl_0类型的指针，也就是说将block传入到了__HaviBlock__createBlock_block_func_0中，方便重中取出block捕获的值。
 
-## 验证Block本质确实是__HaviBlock__createBlock_block_impl_0结构体
+# 验证Block本质
+**Block本质确实是__HaviBlock__createBlock_block_impl_0结构体**
 方法：我们使用自定义和Block一致的结构体，并将block内部的结构体强制转化为我们自定义的结构体：
 ```objectivec
 struct __main_block_desc_0 { 
@@ -232,7 +231,8 @@ int main(int argc, const char * argv[]) {
 
 ![duan2](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block5.png)
 
-## 总结：到这里我们从源码查看了所有和block有关的结构体，下面通过一张图解释各个结构体的关系：
+## 总结
+**到这里我们从源码查看了所有和block有关的结构体，下面通过一张图解释各个结构体的关系：**
 
 ![duan3](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/Block.png)
 
@@ -360,7 +360,7 @@ return 0;
 
 从上面我们可以看到block都继承自NSBlock->NSObject:这也更加的验证了block是个对象
 
-## block有三种类型：
+## block有三种类型
 ```objectivec
 __NSGlobalBlock__ （ _NSConcreteGlobalBlock ）
 __NSStackBlock__ （ _NSConcreteStackBlock ）
