@@ -9,39 +9,43 @@ tags:
   - Runtime
 ---
 
-# 本文面试题总结：
+# 面试题
 
-一个NSObject对象占用多少内存？
+**一个NSObject对象占用多少内存？**
 答：一个指针变量所占用的大小（64bit占8个字节，32bit占4个字节）
-对象的isa指针指向哪里？
+
+**对象的isa指针指向哪里？**
 答：instance对象的isa指针指向class对象，class对象的isa指针指向meta-class对象，meta-class对象的isa指针指向基类的meta-class对象，基类自己的isa指针也指向自己。
-OC的类信息存放在哪里？
+
+**OC的类信息存放在哪里？**
 答：成员变量的具体值存放在instance对象。对象方法，协议，属性，成员变量信息存放在class对象。类方法信息存放在meta-class对象。
 
-# OC代码转化为C++:
-1. clang -rewrite-objc main.m -o main.cpp // 这种方式没有指定架构例如arm64架构 其中cpp代表（c plus plus）生成 main.cpp
-2. 如果你直接使用会报错;请使用：xcrun -sdk iphonesimulator clang -rewrite-objc main.m
-3. 将此命令设置为zsh常用命令：[详情](https://www.jianshu.com/p/bd6a94d8e49b)
+# OC对象内存大小探究
+1.clang -rewrite-objc main.m -o main.objectivec // 这种方式没有指定架构例如arm64架构 其中objectivec代表（c plus plus）生成 main.objectivec
+2.如果你直接使用会报错;请使用：xcrun -sdk iphonesimulator clang -rewrite-objc main.m
+3.将此命令设置为zsh常用命令：[详情](https://www.jianshu.com/p/bd6a94d8e49b)
 
 ## OC NSObject对象内部是如何布局的
-1. OC对象编译成C++代码
-2. NSObject底层实现：是一个结构体，而Class就是一个指针
-```php
+1.OC对象编译成C++代码
+2.NSObject底层实现：是一个结构体，而Class就是一个指针
+
+```objectivec
 struct NSObject_IMPL {
     Class isa;
 };
 
 typedef struct objc_class *Class;
 ```
-3. 那么NSObject_IMPL这个结构体占多大的内存空间呢，我们发现这个结构体只有一个成员，isa指针，而指针在64位架构中占8个字节。也就是说一个NSObjec对象所占用的内存是8个字节。
-- NSObject还有很多的类方法，这些也占用内存空间，但是这些方法占用的内存空间不在NSObject中 <br>
-- int 指针 连续操作4个字节空间 <br>
-- double 指针 连续操作8个字节空间 <br>
-- float 指针 连续操作4个字节空间 <br>
-- char 指针 连续操作1个字节空间 <br>
+
+3.那么NSObject_IMPL这个结构体占多大的内存空间呢，我们发现这个结构体只有一个成员，isa指针，而指针在64位架构中占8个字节。也就是说一个NSObjec对象所占用的内存是8个字节。
+* NSObject还有很多的类方法，这些也占用内存空间，但是这些方法占用的内存空间不在NSObject中
+* int 指针 连续操作4个字节空间
+* double 指针 连续操作8个字节空间
+* float 指针 连续操作4个字节空间
+* char 指针 连续操作1个字节空间
   
 ## OC自定义对象IMP实现及内存大小
-```c
+```objectivec
 @interface Student : NSObject
 {
 @public
@@ -53,7 +57,7 @@ NSString *address;
 @end
 ```
 编译后：
-```php
+```objectivec
 struct Student_IMPL {
 struct NSObject_IMPL NSObject_IVARS;
 int _no;
@@ -62,17 +66,19 @@ NSString *address;
 NSString * _Nonnull _name;
 };
 ```
-4. Student自定义对象占用的内存空间是ISA(8) + _no(4) + _age(4) + address（8） + _name（8） = 32
+Student自定义对象占用的内存空间是ISA(8) + _no(4) + _age(4) + address（8） + _name（8） = 32
 
-## 总结：‼️一个NSObjec对象所占用的内存是8个字节
+## 总结
+一个NSObjec对象所占用的内存是8个字节
 
-# 窥探内存结构
-## 方式一：通过打断点。
-1. Debug Workflow -> viewMemory address中输入stu的地址
+# OC对象内存结构
+## 方式一：打断点
+Debug Workflow -> viewMemory address中输入stu的地址
 ![debug-one](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/memroy1.png)
 
-## 方式二：通过lldb指令xcode自带的调试器
-```php
+## 方式二：lldb指令
+
+```objectivec
 memory read 0x10074c450
 // 简写  x 0x10074c450
 
@@ -91,11 +97,11 @@ memory read 0x10074c450
 2. 整个Struct的地址必须是最大字节的整数倍。<br>
 
 ## OC对象的分类
-1. OC的类信息存放在哪里? <br>
-2. 对象的isa指针指向哪里?
+1.OC的类信息存放在哪里? 
+2.对象的isa指针指向哪里?
 
 示例代码：
-```php
+```objectivec
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
@@ -150,12 +156,12 @@ int main(int argc, const char * argv[]) {
 }
 ```
     
-## OC的对象类型：
-1. instance 对象（实力对象），如：Person *person
-2. class对象（类对象），
-3. meta-class对象（元类对象）；
+## OC的对象类型
+1.instance 对象（实力对象），如：Person *person
+2.class对象（类对象），
+3.meta-class对象（元类对象）；
 
-```php
+```objectivec
 PersonOne *person = [[PersonOne alloc] init];//person 是一个instance变量
 //可以使用class方法或者runtime获取
 Class class = [person class]; //class是类对象
@@ -167,18 +173,19 @@ if (class_isMetaClass(meta_class1)) {
     NSLog(@"is meta-class");
 }
 ```
-## instance对象不唯一性；class对象和meta-class唯一性
+## instance对象不唯一性
 
-1. instance对象就是通过类alloc出来的对象，每次调用alloc都会产生新的instance对象；
-```php
+**1.instance对象就是通过类alloc出来的对象，每次调用alloc都会产生新的instance对象；**
+```objectivec
 NSObjcet *object1 = [[NSObjcet alloc] init];
 NSObjcet *object2 = [[NSObjcet alloc] init];
 0x600001d210a0 0x600001d21010
 ```
-> 不同的instance对象内存地址是不同的
+>不同的instance对象内存地址是不同的
 
-2. 每一个类在内存中有且只有一个class对象。
-```php
+## class对象和meta-class唯一性
+**1.每一个类在内存中有且只有一个class对象。**
+```objectivec
 Class objectClass1 = [object1 class];
 Class objectClass2 = [object2 class];
 Class objectClass3 = [NSObject class];
@@ -188,33 +195,34 @@ Class objectClass5 = object_getClass(object2);
 NSLog(@"%p %p %p %p %p", objectClass1, objectClass2, objectClass3, objectClass4, objectClass5);
 0x10f990f38 0x10f990f38 0x10f990f38 0x10f990f38 0x10f990f38
 ```
-3. 每个类在内存中有且只有一个meta-class对象。
-```php
+**2.每个类在内存中有且只有一个meta-class对象。**
+```objectivec
 Class metaObjectClass1 = object_getClass([NSObject class]);
 Class metaObjectClass2 = [NSObject class];
 NSLog(@"%p %p", metaObjectClass1, metaObjectClass2);
 0x10e050ee8 0x10e050f38
 ```
  
-## instance/class/meta-class对象存放的信息
-1. instance对象在内存中存储的信息包括
+## 对象存放的信息
+instance/class/meta-class对象存放的信息
+**1.instance对象在内存中存储的信息包括：**
 * isa指针
 * 其成员变量
 
 ![instance-message](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/instance.png)
 
-2. class对象在内存中存放的信息包括：
+**2.class对象在内存中存放的信息包括：**
 * isa指针
 * superclass指针
 * 类的属性信息（@property），类的成员变量信息（ivar）
 * 类的对象方法信息（instance method），类的协议信息（protocol）
 
-> 我们在runtime的源码中搜索objc_class，然后在obj-runtime-new.h这找到了class的结构<br>
+>我们在runtime的源码中搜索objc_class，然后在obj-runtime-new.h这找到了class的结构<br>
 
 class_ro_t:代表只读；class_rw_t:readWrite
 ![class-message](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/class.png)
 
-```php
+```objectivec
 struct objc_class : objc_object {
 // Class ISA;
 Class superclass;
@@ -249,67 +257,62 @@ method_list_t *baseMethods() const {
 };
 ```
 
-3. meta-class对象在内存中存放的信息包括：
+**3.meta-class对象在内存中存放的信息包括：**
 * isa指针
 * superclass指针
 * 类的类方法的信息（class method）
 
 ![meta-class](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/meta-class.png)
 
-> meta-class对象和class对象的内存结构是一样的，所以meta-class中也有类的属性信息，类的对象方法信息等成员变量，但是其中的值可能是空的。
+>meta-class对象和class对象的内存结构是一样的，所以meta-class中也有类的属性信息，类的对象方法信息等成员变量，但是其中的值可能是空的。
  
-## 调用instance方法/class方式runtime是如何找到方法实现的？
-
-1. instance对象调用对象方法：
-```php
+## 对象如何找到方法实现的？
+调用instance方法/class方法runtime是如何找到方法实现的
+**1.instance对象调用对象方法：**
+```objectivec
 [stu studentMethod];
 ```
-> instance的isa指向class，当调用对象方法时，通过instance的isa找到class，最后找到对象方法的实现进行调用。
+>instance的isa指向class，当调用对象方法时，通过instance的isa找到class，最后找到对象方法的实现进行调用。
 
 ![instance-isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/isa.png)
  
-2. 当类对象调用类方法的时候：
-```php
+**2.当类对象调用类方法的时候：**
+```objectivec
 [Student studentMethod];
 ```
-> class的isa指向meta-class;当调用类方法时，通过class的isa找到meta-class，最后找到类方法的实现进行调用
+>class的isa指向meta-class;当调用类方法时，通过class的isa找到meta-class，最后找到类方法的实现进行调用
 
 ![meta-isa](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/meta-isa.png)
  
-3. 当对象调用其父类对象方法的时候:要使用到class类对象superclass指针
-```php
+**3.当对象调用其父类对象方法的时候:要使用到class类对象superclass指针**
+```objectivec
 [stu personMethod];
 [stu init];
 ```
-> 当Student的instance对象要调用Person的对象方法时，会先通过isa找到Student的class，然后通过superclass找到Person的class，最后找到对象方法的实现进行调用，同样如果Person发现自己没有响应的对象方法，又会通过Person的superclass指针找到NSObject的class对象，去寻找响应的方法
+>当Student的instance对象要调用Person的对象方法时，会先通过isa找到Student的class，然后通过superclass找到Person的class，最后找到对象方法的实现进行调用，同样如果Person发现自己没有响应的对象方法，又会通过Person的superclass指针找到NSObject的class对象，去寻找响应的方法
 
-4. 当类对象调用父类的类方法时:
-```php
+**4.当类对象调用父类的类方法时:**
+```objectivec
 [Student personClassMethod];
 [Student load];
 ```
-> 当Student的class要调用Person的类方法时，会先通过isa找到Student的meta-class，然后通过superclass找到Person的meta-class，最后找到类方法的实现进行调用
+>当Student的class要调用Person的类方法时，会先通过isa找到Student的meta-class，然后通过superclass找到Person的meta-class，最后找到类方法的实现进行调用
 
-## 对isa、superclass总结
+# isa、superclass总结
 
-1. instance的isa指向class <br>
-2. class的isa指向meta-class<br>
-3. meta-class的isa指向基类的meta-class，基类的isa指向自己<br>
-4. class的superclass指向父类的class，如果没有父类，superclass指针为nil<br>
-5. meta-class的superclass指向父类的meta-class，基类的meta-class的superclass指向基类的class<br>
-6. instance调用对象方法的轨迹，isa找到class，方法不存在，就通过superclass找父类<br>
-7. class调用类方法的轨迹，isa找meta-class，方法不存在，就通过superclass找父类<br>
+1.instance的isa指向class 
+2.class的isa指向meta-class
+3.meta-class的isa指向基类的meta-class，基类的isa指向自己
+4.class的superclass指向父类的class，如果没有父类，superclass指针为nil
+5.meta-class的superclass指向父类的meta-class，基类的meta-class的superclass指向基类的class
+6.instance调用对象方法的轨迹，isa找到class，方法不存在，就通过superclass找父类
+7.class调用类方法的轨迹，isa找meta-class，方法不存在，就通过superclass找父类
 
 ![classic](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/classic.png)
-
-# Question:
-1. 实例对象的方法的代码放在什么地方呢？
-2. 类的方法的信息，协议的信息，属性的信息都存放在什么地方呢？
-看到这里你应该知道了吧！
   
-# 探索instance->isa 和 class内存地址是否一致
-
-```php
+# isa和class内存地址
+探索instance->isa 和 class内存地址是否一致？
+```objectivec
 NSObject *object = [[NSObject alloc] init];
 Class objectClass = [NSObject class];
 Class objectMetaClass = object_getClass([NSObject class]);
@@ -318,5 +321,9 @@ NSLog(@"%p %p %p", object, objectClass, objectMetaClass);
 ```
 object-isa指针地址0x001dffff96537141经过同0x00007ffffffffff8位运算，得出objectClass的地址0x00007fff96537140
 
+# Question
+1.实例对象的方法的代码放在什么地方呢？
+2.类的方法的信息，协议的信息，属性的信息都存放在什么地方呢？
+看到这里你应该知道了吧！
 
 
