@@ -260,7 +260,7 @@ sidebar:
   # Sidebar offset from top menubar in pixels (only for Pisces | Gemini).
   offset: 12
   # Back to top in sidebar.
-  b2t: false
+  b2t: true
   # Scroll percent label in b2t button.
   scrollpercent: true
   # Enable sidebar on narrow view (only for Muse | Mist).
@@ -307,7 +307,7 @@ post_meta:
 symbols_count_time:
   separated_meta: true
   item_text_post: true
-  item_text_total: false
+  item_text_total: true
   awl: 4
   wpm: 275
 
@@ -317,7 +317,7 @@ codeblock:
   border_radius:
   # Add copy button on codeblock
   copy_button:
-    enable: false
+    enable: true
     # Show text copy result
     show_result: false
 

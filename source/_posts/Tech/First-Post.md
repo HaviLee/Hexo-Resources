@@ -5,12 +5,18 @@ categories:
   - Tech
 tags:
   - Hexo 
+description: <p>Welcome to <A HREF="https://www.fcbarcelona.com/en/">My Blog</A><p>
 ---
 Welcome to [My Blog](http://lizitong.ren/)! This is my blog. Click [documentation](https://hexo.io/docs/) for more info. 
 
 Now Let Start Setup Our Github Page!
 
 ## How To Setup Github Page & Hexo
+
+参考：
+
+[Next Document](https://theme-next.org/docs/getting-started/)
+[如何设定Github Page](https://segmentfault.com/a/1190000017797561)
 
 ### Create a new post
 
