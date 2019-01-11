@@ -2,6 +2,7 @@
 title: About
 date: 2017-01-09 17:50:58
 description: Stay hungry,Stay foolish! Life is brief,and then you die,you know？
+comments: false
 ---
 
 {% note warning %}
