@@ -7,6 +7,7 @@ categories:
 tags:
   - Objective-C
   - Runtime
+description: 学习OC对象的本质，了解到每个对象都有一个isa指针，在[__arm64__]()之前，isa仅仅是一个指针，保存着<strong>类对象或元类对象</strong>的内存地址，在[__arm64__]()之后，apple对isa做了优化，变成了一个union结构，同时使用位域来存储更多的东西。现在OC对象的isa指针并不是直接的指向类对象或者元类对象，而是需要经过[&ISA_MASK]()通过运算才能获得类对象或者元类对象的地址。下面讨论apple为什么这样做？
 ---
 # isa 的本质
 

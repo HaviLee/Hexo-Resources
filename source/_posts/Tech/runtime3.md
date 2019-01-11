@@ -6,6 +6,7 @@ categories:
 tags:
   - Objective-C
   - Runtime
+description: 前面了解到Class,isa的本质，我们这个篇继续介绍runtime的消息机制，从消息发送阶段，动态解析阶段，消息转发阶段入手，对runtime的消息机制有个更加深入的了解。
 ---
 
 # 方法调用本质

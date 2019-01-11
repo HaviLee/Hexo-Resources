@@ -7,6 +7,7 @@ categories:
 tags:
   - Objective-C
   - Runtime
+description: 无论类对象还是元类对象，类型都是Class类型；而其底层是objc class结构体的指针，内存中就是结构体.那么这个结构体的结构是什么样的？
 ---
 
 

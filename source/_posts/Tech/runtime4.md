@@ -6,6 +6,7 @@ categories:
 tags:
   - Objective-C
   - Runtime
+description: 上篇我们详细的了解了Runtime的消息机制，下面我们了解下Super的本质和一些Runtime有关的API.
 ---
 
 # super的本质

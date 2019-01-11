@@ -6,6 +6,8 @@ categories:
 tags:
   - Objective-C
   - RunLoop
+description: runloop是运行着的循环，在程序运行过程中循环做一些事情，如果没有runloop线程执行完任务就会立即退出；如果有runloop线程就可以不退出，并且时候等待用户输入操作。Runloop可以在需要的时候执行任务，在没有任务的时候进行休眠，充分节省CPU，下面我们详细讨论下RunLoop!
+
 ---
 
 # 面试题

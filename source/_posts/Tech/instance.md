@@ -7,6 +7,7 @@ categories:
 tags:
   - Objective-C
   - Runtime
+description: 一个NSObject对象占用多少内存？对象的isa指针指向哪里？OC的类信息存放在哪里？
 ---
 
 # 面试题
