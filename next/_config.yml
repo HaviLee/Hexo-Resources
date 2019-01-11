@@ -160,7 +160,7 @@ menu_settings:
 # scheme: Muse
 # scheme: Mist
 scheme: Pisces
-#scheme: Gemini
+# scheme: Gemini
 
 
 # ---------------------------------------------------------------
@@ -180,18 +180,18 @@ social:
   E-Mail: havi_mini_program@163.com || envelope
   Weibo: https://weibo.com/u/3951119213 || weibo
   # Google: https://plus.google.com/yourname || google
-  Twitter: https://twitter.com/havili || twitter
-  FB Page: https://www.facebook.com/havili || facebook
+  Twitter: https://twitter.com/Havi_Lee || twitter
+  FB Page: https://www.facebook.com/havi.lee.9 || facebook
   # VK Group: https://vk.com/yourname || vk
   # StackOverflow: https://stackoverflow.com/yourname || stack-overflow
   # YouTube: https://youtube.com/yourname || youtube
-  ZhiHu: https://www.zhihu.com/people/Havi_Lee || vk
+  ZhiHu: https://www.zhihu.com/people/Havi_Lee || quora
   # Skype: skype:yourname?call|chat || skype
 
 social_icons:
   enable: true
-  icons_only: false
-  transition: false
+  icons_only: true
+  transition: true
 
 post_wordcount:
   item_text: true
@@ -205,13 +205,13 @@ post_wordcount:
 #github_banner: https://github.com/yourname || Follow me on GitHub
 
 # Blog rolls
-links_icon: link
-links_title: Links
-# links_layout: block
-links_layout: inline
-links:
-  NSHipster: https://nshipster.com
-  objc: https://www.objc.io
+# links_icon: link
+# links_title: Links
+# # links_layout: block
+# links_layout: inline
+# links:
+#   NSHipster: https://nshipster.com
+#   objc: https://www.objc.io
 
 # Sidebar Avatar
 avatar:
@@ -366,7 +366,7 @@ post_edit:
 disable_baidu_tranformation: false
 
 # Reduce padding / margin indents on devices with narrow width.
-mobile_layout_economy: false
+mobile_layout_economy: true
 
 # Android Chrome header panel color ($brand-bg / $headband-bg => $black-deep).
 android_chrome_color: "#222"
@@ -383,7 +383,7 @@ custom_logo:
 # Code Highlight theme
 # Available values: normal | night | night eighties | night blue | night bright
 # https://github.com/chriskempson/tomorrow-theme
-highlight_theme: normal
+highlight_theme: night bright
 
 # Enable "cheers" for archive page.
 cheers_enabled: true
@@ -402,7 +402,7 @@ cheers_enabled: true
 # Arial | Tahoma | Helvetica | Times New Roman | Courier New | Verdana | Georgia | Palatino | Garamond | Comic Sans MS | Trebuchet MS
 # ---------------------------------------------------------------
 font:
-  enable: false
+  enable: true
 
   # Uri of fonts host. E.g. //fonts.googleapis.com (Default).
   host:
@@ -779,7 +779,7 @@ bookmark:
 
 # ---------------------------------------------------------------
 # Tags Settings
-# ---------------------------------------------------------------
+# ---------------------------------------------------------------hex
 
 # See: https://theme-next.org/docs/tag-plugins/
 # Note tag (bs-callout)

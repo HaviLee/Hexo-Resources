@@ -1,11 +1,15 @@
 ---
 title: Block本质探究二
 date: 2017-01-17 13:47:40
+keywords: Block
+description: block在使用过程中一般都是对对象的捕获，那么对对象的捕获是不是和基础类型一样？当block访问的是对象类型的话，对象在什么时候销毁？
 categories: 
   - Tech
 tags:
   - Objective-C
   - Block
+comments: false
+
 ---
 
 # block对对象变量的捕获

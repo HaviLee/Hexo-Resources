@@ -1,12 +1,15 @@
 
 ---
 title: Block本质探究一
+keywords: Block
+description: block本质也是一个OC对象，内部也有一个isa指针。block是封装了函数调用以及函数调用环境的OC对象。
 date: 2017-01-16 13:47:40
 categories: 
   - Tech
 tags:
   - Objective-C
   - Block
+comments: false
 ---
 
 # 面试题

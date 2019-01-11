@@ -111,3 +111,38 @@ deploy:
   type: git
   repository: https://github.com/HaviLee/HaviLee.github.io.git
   branch: master
+  message: "Updated: {{ now('YYYY-MM-DD HH:mm:ss') }}"
+
+ # ============================================================= #
+  # ====================== Scheme Settings ====================== #
+  # ============================================================= #
+
+  #scheme: Muse
+  #scheme: Mist
+  #scheme: Pisces
+  scheme: Gemini
+
+# ============================================================= #
+  # ================= Site Information Settings ================= #
+  # ============================================================= #
+
+  footer:
+    since: 2017
+    icon:
+      name: heart
+      animated: true
+      color: "#808080"
+    copyright: HaviLee
+    # -------------------------------------------------------------
+    powered:
+      enable: false
+      version: true
+    theme:
+      enable: false
+      version: false
+    custom_text: Theme source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL3RoZW1lLW5leHQvaGV4by10aGVtZS1uZXh0">here</span><br>Website source code <span class="exturl theme-link" data-url="aHR0cHM6Ly9naXRodWIuY29tL3RoZW1lLW5leHQvdGhlbWUtbmV4dC5vcmc=">here</span>
+
+  creative_commons:
+    license: by-nc-sa
+    sidebar: true
+    post: false
