@@ -1,19 +1,18 @@
 ---
 title: The Build Process
 date: 2017-01-10 13:47:40
-categories: 
-  - Tech
-tags:
-  - Xcode Compiler 
+categories: [Tech]
+tags: [Build Tool,Xcode]
+description: 这个系列的博客主要是讲述Xcode的build过程，这个过程涉及到Clang, LLVM, 等。
 ---
 
->  Because he can take it,because he's not a hero.He's a silent guardian... a watchful protector.A dark knight!  --  <The Dark Knight>
+**Because he can take it,because he's not a hero.He's a silent guardian... a watchful protector.A dark knight!  --  The Dark Knight**
 
 我们这些天被宠坏了-- 我们只需要点击一下xcode上面的按钮，然后一首歌的时间，或者几秒，我们的app就可以运行。非常神奇，直到出现了错误。
 
 在这篇文章中，我们会深入编译过程，然后去剖析xcode面板上的和项目有关的设定。更加深入的去研究每一步是如何工作的。
 
-## 破译编译日志
+# 破译编译日志
 
 我们深入了解Xcode编译过程内部工作原理的第一点就是查看完整的编译log。打开导航栏，选中一个编译，xcode会为你展示详细的log。
 ![image](https://raw.githubusercontent.com/Interview-Skill/2019-Blog/Images/xcode.png)
@@ -23,7 +22,7 @@ tags:
 在我们的例子中，log大概有10000行，下面开始分析：
 首先我们可以注意到日志根据我们项目的target分为了不同的模块：
 
-```php
+```objectivec
 Build target Pods-SSZipArchive
 ...
 Build target Makefile-openssl
@@ -40,9 +39,7 @@ Build target objcio
 ```
 
 我们项目有依赖第三方库：使用Pods管理AFNetworking和SSZipArchive;使用subproject管理OpenSSL.
-
 对于每一个target,Xcode会执行一系列的步骤，将源码最终转化为机器可识别的二进制文件。我们首先来看第一个target，SSZipeArchive.
-
 在这个target的输出日志中，我们可以看到每个target日志里面详细。比如，第一个task是处理precompiled 头文件的：
 
 ```php

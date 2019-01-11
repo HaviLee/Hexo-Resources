@@ -1,5 +1,5 @@
 ---
-title: About
+title: About1
 date: 2017-01-09 17:50:58
 description: Stay hungry,Stay foolish! Life is brief,and then you die,you know？
 comments: false
@@ -30,3 +30,5 @@ $ git clone https://github.com/theme-next/hexo-theme-next themes/next
 3. Extract the zip file to site's themes directory and rename the extracted folder (`hexo-theme-next-6.0.0`) to `next`.
 <!-- endtab -->
 {% endtabs %} -->
+
+![你想输入的替代文字](about/aaa.png)
