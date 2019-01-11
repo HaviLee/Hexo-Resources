@@ -205,13 +205,15 @@ post_wordcount:
 #github_banner: https://github.com/yourname || Follow me on GitHub
 
 # Blog rolls
-# links_icon: link
-# links_title: Links
-# # links_layout: block
-# links_layout: inline
-# links:
-#   NSHipster: https://nshipster.com
-#   objc: https://www.objc.io
+links_icon: link
+links_title: You May Want
+# links_layout: block
+links_layout: inline
+links:
+  NSHipster: https://nshipster.com
+  Objc: https://www.objc.io
+  MeiTuan: https://tech.meituan.com
+  CNSwift: https://www.cnswift.org/advanced-operators
 
 # Sidebar Avatar
 avatar:

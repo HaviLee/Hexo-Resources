@@ -17,6 +17,7 @@ Now Let Start Setup Our Github Page!
 
 [Next Document](https://theme-next.org/docs/getting-started/)
 [如何设定Github Page](https://segmentfault.com/a/1190000017797561)
+[Next中使用的图标](https://fontawesome.com/icons?d=gallery&q=qu)
 
 ### Create a new post
 
