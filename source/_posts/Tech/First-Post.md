@@ -11,13 +11,16 @@ Welcome to [My Blog](http://lizitong.ren/)! This is my blog. Click [documentatio
 
 Now Let Start Setup Our Github Page!
 
-## How To Setup Github Page & Hexo
-
 参考：
-
+[更多的Hexo Next设定可以参考](https://theme-next.org/docs/getting-started/)
 [Next Document](https://theme-next.org/docs/getting-started/)
 [如何设定Github Page](https://segmentfault.com/a/1190000017797561)
 [Next中使用的图标](https://fontawesome.com/icons?d=gallery&q=qu)
+
+### Create a new page
+``` bash
+$ hexo new page "page"
+```
 
 ### Create a new post
 
