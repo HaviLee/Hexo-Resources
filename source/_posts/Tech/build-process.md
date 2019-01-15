@@ -12,7 +12,7 @@ tags: [Compile,Xcode]
 
 在这篇文章中，我们会深入编译过程，然后去剖析xcode面板上的和项目有关的设定。更加深入的去研究每一步是如何工作的。
 
-<h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">破译构建日志</h1>
+<h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">一.破译构建日志</h1>
 
 我们深入了解Xcode编译过程内部工作原理的第一点就是查看完整的编译log。打开导航栏，选中一个编译，xcode会为你展示详细的log。
 ![image](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/precompile-header.png)

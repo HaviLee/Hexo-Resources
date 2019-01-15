@@ -14,7 +14,8 @@ comments: false
 <!--more-->
 <!-- description: block本质也是一个OC对象，内部也有一个isa指针。block是封装了函数调用以及函数调用环境的OC对象。block原理是什么？本质是什么？__block作用是什么？有什么注意点？ -->
 
-# 面试题
+<h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">面试题</h1>
+
 **1.block原理是什么？本质是什么？**
 2.__block作用是什么？有什么注意点？
 3.block的属性修饰词为什么是copy？使用block有哪些使用注意？
@@ -22,7 +23,9 @@ comments: false
 
 >首先：block本质也是一个OC对象，内部也有一个isa指针。block是封装了函数调用以及函数调用环境的OC对象。
 
-# 探寻block的本质
+
+<h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">探寻block的本质</h1>
+
 ```objectivec
 - (void)createBlock
 {
@@ -195,7 +198,8 @@ __HaviBlock__createBlock_block_impl_0 构造函数中传入的值存储在__Havi
 
 FunPtr中存储着通过代码块封装的函数地址，那么调用这个函数，也就是执行代码快中的代码。回头看__HaviBlock__createBlock_block_func_0，可以发现第一个参数是_HaviBlock__createBlock_block_impl_0类型的指针，也就是说将block传入到了__HaviBlock__createBlock_block_func_0中，方便重中取出block捕获的值。
 
-# 验证Block本质
+<h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">验证Block本质</h1>
+
 **Block本质确实是__HaviBlock__createBlock_block_impl_0结构体**
 方法：我们使用自定义和Block一致的结构体，并将block内部的结构体强制转化为我们自定义的结构体：
 ```objectivec
@@ -245,7 +249,7 @@ int main(int argc, const char * argv[]) {
 
 ![duan3](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block7.png)
 
-# Block捕获变量
+<h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">Block捕获变量</h1>
 
 为了保证block能够正常访问外部变量，block有一个变量捕获机制：
 
@@ -334,8 +338,8 @@ int main(int argc, const char * argv[]) {
 
 ** ⚠️局部变量都会被block捕获，自动变量是值捕获，静态变量为地址捕获。全局变量不会被捕获。**
 
- 
-# block的类型
+<h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">block的类型</h1>
+
 
 block是什么类型？在前面的源代码里看到isa指向了_NSConcreateStackBlock对象，那么block是不是就是_NSConcreateStackBlock类型？？？
 ```objectivec
@@ -493,7 +497,7 @@ int main(int argc, const char * argv[]) {
 ![stack](https://media.githubusercontent.com/media/Interview-Skill/OC-Class-Analysis/master/Image/block6.png)
 >⚠️ 因此在MRC开始时期，我们经常使用copy来保存block，将栈上的block复制到堆中，即使栈中的block销毁，堆上的block也不会销毁，需要我们自己销毁,<strong>但是在ARC环境下，xcode会自动给我们进行copy操作，使得block不会被销毁。
 
-# ARC帮你做了什么
+<h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">ARC帮你做了什么</h1>
 
 在ARC环境下，编译器会根据情况自动将栈上的block进行copy操作，将block复制到堆上。
 **什么情况下ARC会自动的进行copy操作？**
@@ -585,8 +589,9 @@ dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), 
 });
 
 ```
+ 
+<h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">block声明写法</h1>
 
-# block声明写法
 1. MRC环境下：
 ```objectivec
 @property (nonmatic, copy) void (^block)(void);
@@ -599,7 +604,8 @@ dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), 
 
 > [探寻block的本质](https://www.jianshu.com/p/c99f4974ddb5)
 
-# 附加题
+<h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">附加题</h1>
+ 
 下面的block是否会捕获变量呢？
 
 ```objectivec
