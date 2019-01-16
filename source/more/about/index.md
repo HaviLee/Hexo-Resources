@@ -15,23 +15,9 @@ comments: false
 You can visit {% exturl My Resume https://lizitong.ren %} to see more information.
 {% endnote %}
 
+*******
+
 {% tabs colored-variables %}
-<!-- tab {% label success@Recommended Settings %} -->
-All {% label success@recommended settings %} will be highlighted under the success label.
-<!-- endtab -->
-
-<!-- tab {% label warning@Deprecated Settings %} -->
-All {% label warning@deprecated settings %} will be highlighted under the warning label.
-<!-- endtab -->
-
-<!-- tab {% label danger@Possible Errors %} -->
-And all {% label danger@possible errors %} will be highlighted under the danger label.
-<!-- endtab -->
-{% endtabs %}
-
-
-
-{% tabs downloading-next %}
 <!-- Objective-C -->
 {% label primary@Runtime %} {% label info@Runtime %} {% label danger@Runtime %} {% label success@Runtime %} {% label warning@Runtime %} 
 <!-- endtab -->
