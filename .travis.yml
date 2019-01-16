@@ -11,14 +11,11 @@ cache:
 install:
   - npm install
 
-before_script:
-  - npm install -g gulp
-
 script:
-  - gulp dist
+  - hexo g
 
 after_script:
-  - cd dist
+  - cd public
   - git init
   - git config user.name "HaviLee"
   - git config user.email "1058695900@qq.com"
