@@ -3,9 +3,8 @@
 title: Runtime本质探究二
 date: 2017-02-05 13:47:40
 categories: 
-  - Tech
-tags:
   - Objective-C
+tags:
   - Runtime
 description: 学习OC对象的本质，了解到每个对象都有一个isa指针,现在OC对象的isa指针并不是直接的指向类对象或者元类对象，而是需要经过[&ISA_MASK]()通过运算才能获得类对象或者元类对象的地址。下面讨论apple为什么这样做？
 ---

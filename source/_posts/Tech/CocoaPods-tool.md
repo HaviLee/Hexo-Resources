@@ -1,8 +1,8 @@
 ---
 title: CocoaPods 探究
 date: 2017-05-11 13:47:40
-categories: [Tech]
-tags: [CocoaPods,Compile]
+categories: [Build-Tools]
+tags: [CocoaPods]
 ---
 
 ![clang](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/cocoapods.jpeg)

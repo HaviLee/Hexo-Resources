@@ -2,9 +2,8 @@
 title: Runtime本质探究五
 date: 2017-02-08 13:47:40
 categories: 
-  - Tech
-tags:
   - Objective-C
+tags:
   - Runtime
 description: 上篇我们详细的了解了Runtime的消息机制，下面我们了解下Super的本质和一些Runtime有关的API.
 ---

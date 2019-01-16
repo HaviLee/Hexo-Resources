@@ -1,7 +1,7 @@
 ---
 title: The Compiler
 date: 2017-03-10 13:47:40
-categories: [Tech]
+categories: [Build-Tools]
 tags: [Compile,Xcode]
 ---
 

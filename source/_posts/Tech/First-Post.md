@@ -1,10 +1,8 @@
 ---
 title: Hello Hexo & Github Page
 date: 2017-01-11 13:47:40
-categories: 
-  - Tech
-tags:
-  - Hexo 
+categories: [Build-Tools]
+tags: [Hexo]
 description: <p>Welcome to <A HREF="https://www.fcbarcelona.com/en/">My Blog</A><p>
 ---
 Welcome to [My Blog](http://lizitong.ren/)! This is my blog. Click [documentation](https://hexo.io/docs/) for more info. 

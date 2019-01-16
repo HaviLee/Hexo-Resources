@@ -2,9 +2,8 @@
 title: Category本质探究
 date: 2017-02-01 13:47:40
 categories: 
-  - Tech
-tags:
   - Objective-C
+tags:
   - Category
 description: Category是Objective-C里面最常用到的功能之一；Category可以为已经存在的类增加方法，而不需要增加一个子类;另外，Category使得我们在不知道某个类的内部实现的情况下，为该类增加方法。
 ---

@@ -26,20 +26,20 @@ You can visit {% exturl My Resume https://lizitong.ren %} to see more informatio
 <!-- endtab -->
 
 <!-- tab Swift -->
-{% label primary@Runtime %} {% label info@RunLoop %} {% label danger@Category %} {% label success@Block %} {% label warning@CoreData %} 
-{% label warning@Notification %} {% label primary@Muti-Thread %} {% label danger@KVO %} {% label success@KVC %}{% label info@Networking %} 
-{% label primary@Memory-Management %} {% label info@Cocoa %}
+{% label primary@Runtime %}  {% label info@RunLoop %}  {% label danger@Category %}  {% label success@Block %}  {% label warning@CoreData %} 
+{% label warning@Notification %}  {% label primary@Muti-Thread %}  {% label danger@KVO %}  {% label success@KVC %}  {% label info@Networking %} 
+{% label primary@Memory-Management %}  {% label info@Cocoa %}
 <!-- endtab -->
 
 <!-- tab Build-Tools -->
-{% label primary@Compile %} {% label info@Fastlane %} {% label danger@Jenkins %} {% label success@TravisCI %} {% label warning@CocoaPods %}
-{% label warning@Carthage %} {% label primary@LLVM %} {% label danger@Clang %} {% label success@Codesign %}
+{% label primary@Compile %}  {% label info@Fastlane %}  {% label danger@Jenkins %}  {% label success@TravisCI %}  {% label warning@CocoaPods %}
+{% label warning@Carthage %}  {% label primary@LLVM %}  {% label danger@Clang %}  {% label success@Codesign %}  {% label info@Xcode %}  {% label info@Hexo %}
 
 <!-- endtab -->
 
 <!-- tab Architecture -->
-{% label primary@MVC %} {% label info@MVVM %} {% label danger@MVP %} {% label success@VIPER %} {% label warning@Design-Pattern %}
-{% label warning@函数式编程 %} {% label primary@响应式编程 %}
+{% label primary@MVC %}  {% label info@MVVM %}  {% label danger@MVP %}  {% label success@VIPER %}  {% label warning@Design-Pattern %}
+{% label warning@函数式编程 %}  {% label primary@响应式编程 %}
 <!-- endtab -->
 
 <!-- tab Algorithm -->

@@ -1,10 +1,9 @@
 ---
 title: Runtime本质探究三
 date: 2017-02-06 13:47:40
-categories: 
-  - Tech
-tags:
+ategories: 
   - Objective-C
+tags:
   - Runtime
 description: 在学习了isa之后，我们下面详细讨论下Class内部结构,及其内部是如何进行布局的。
 ---

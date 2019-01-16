@@ -3,9 +3,8 @@
 title: Instance本质探究
 date: 2017-01-13 13:47:40
 categories: 
-  - Tech
-tags:
   - Objective-C
+tags:
   - Runtime
 description: 一个NSObject对象占用多少内存？对象的isa指针指向哪里？OC的类信息存放在哪里？
 ---

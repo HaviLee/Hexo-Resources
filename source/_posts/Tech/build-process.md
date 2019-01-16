@@ -1,7 +1,7 @@
 ---
 title: The Build Process
 date: 2017-01-10 13:47:40
-categories: [Tech]
+categories: [Build-Tools]
 tags: [Compile,Xcode]
 ---
 

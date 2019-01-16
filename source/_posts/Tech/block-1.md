@@ -3,9 +3,8 @@ title: Block本质探究一
 keywords: Block
 date: 2017-01-16 13:47:40
 categories: 
-  - Tech
-tags:
   - Objective-C
+tags:
   - Block
 comments: false
 ---
