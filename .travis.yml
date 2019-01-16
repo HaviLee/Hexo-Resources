@@ -23,7 +23,7 @@ after_script:
   - git config user.name "HaviLee"
   - git config user.email "1058695900@qq.com"
   - git add .
-  - git commit -m "Update docs:{{ now('YYYY-MM-DD HH:mm:ss') }} "
+  - git commit -m "Update docs:$(date +%Y%m%d) "
   - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:master
 # E: Build LifeCycle
 
