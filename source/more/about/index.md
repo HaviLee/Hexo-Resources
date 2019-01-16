@@ -18,41 +18,45 @@ You can visit {% exturl My Resume https://lizitong.ren %} to see more informatio
 *******
 
 {% tabs colored-variables %}
-<!-- Objective-C -->
-{% label primary@Runtime %} {% label info@Runtime %} {% label danger@Runtime %} {% label success@Runtime %} {% label warning@Runtime %} 
+<!-- tab Objective-C -->
+{% label primary@Runtime %} {% label info@RunLoop %} {% label danger@Category %} {% label success@Block %} {% label warning@CoreData %} 
+{% label warning@Notification %} {% label primary@Muti-Thread %} {% label danger@KVO %} {% label success@KVC %}{% label info@Networking %}  
+{% label primary@Memory-Management %} {% label info@Cocoa %} 
+
+
 <!-- endtab -->
 
-<!-- Swift -->
+<!-- tab Swift -->
 1. Go to NexT version {% exturl Release Page https://github.com/theme-next/hexo-theme-next/releases %}.
 2. Choose the version you need and download the Source Code (zip) in the Download section. For example v6.0.0.
 3. Extract the zip file to site's themes directory and rename the extracted folder (`hexo-theme-next-6.0.0`) to `next`.
 <!-- endtab -->
 
-<!-- Build-Tools -->
+<!-- tab Build-Tools -->
 1. Go to NexT version {% exturl Release Page https://github.com/theme-next/hexo-theme-next/releases %}.
 2. Choose the version you need and download the Source Code (zip) in the Download section. For example v6.0.0.
 3. Extract the zip file to site's themes directory and rename the extracted folder (`hexo-theme-next-6.0.0`) to `next`.
 <!-- endtab -->
 
-<!-- Architecture -->
+<!-- tab Architecture -->
 1. Go to NexT version {% exturl Release Page https://github.com/theme-next/hexo-theme-next/releases %}.
 2. Choose the version you need and download the Source Code (zip) in the Download section. For example v6.0.0.
 3. Extract the zip file to site's themes directory and rename the extracted folder (`hexo-theme-next-6.0.0`) to `next`.
 <!-- endtab -->
 
-<!-- Algorithm -->
+<!-- tab Algorithm -->
 1. Go to NexT version {% exturl Release Page https://github.com/theme-next/hexo-theme-next/releases %}.
 2. Choose the version you need and download the Source Code (zip) in the Download section. For example v6.0.0.
 3. Extract the zip file to site's themes directory and rename the extracted folder (`hexo-theme-next-6.0.0`) to `next`.
 <!-- endtab -->
 
-<!-- Testing -->
+<!-- tab Testing -->
 1. Go to NexT version {% exturl Release Page https://github.com/theme-next/hexo-theme-next/releases %}.
 2. Choose the version you need and download the Source Code (zip) in the Download section. For example v6.0.0.
 3. Extract the zip file to site's themes directory and rename the extracted folder (`hexo-theme-next-6.0.0`) to `next`.
 <!-- endtab -->
 
-<!-- Source-Code  -->
+<!-- tab Source-Code  -->
 1. Go to NexT version {% exturl Release Page https://github.com/theme-next/hexo-theme-next/releases %}.
 2. Choose the version you need and download the Source Code (zip) in the Download section. For example v6.0.0.
 3. Extract the zip file to site's themes directory and rename the extracted folder (`hexo-theme-next-6.0.0`) to `next`.
