@@ -1,30 +1,31 @@
 language: node_js
-node_js:
-  - '6'
-before_install:
-  - export TZ='Asia/Shanghai'  # 设置时区
-  - npm install -g hexo
-  - npm install -g hexo-cli
+node_js: stable
 
+# Travis-CI Caching
+cache:
+  directories:
+    - node_modules
+
+
+# S: Build Lifecycle
 install:
   - npm install
 
-
-
 before_script:
-# 设置github账户信息
-  - git config --global user.name "HaviLee" #设置github用户名
-  - git config --global user.email 1058695900@qq.com #设置github用户邮箱
-# github仓库操作
-  - sed -i'' "s~${GH_REF}~${GH_TOKEN}:x-oauth-basic@${GH_REF}~" _config.yml
-
+  - npm install -g gulp
 
 script:
-  - hexo clean 
-  - hexo g
+  - gulp dist
 
-after_success:
-  - hexo deploy
+after_script:
+  - cd dist
+  - git init
+  - git config user.name "HaviLee"
+  - git config user.email "1058695900@qq.com"
+  - git add .
+  - git commit -m "Update docs"
+  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages
+# E: Build LifeCycle
 
 branches:
   only:
@@ -32,9 +33,4 @@ branches:
 env:
  global:
    - GH_REF: github.com/HaviLee/HaviLee.github.io.git
-
-
-# .travis.yml 配置this is new config
-cache:
-  directories:
-    - node_modules
+   - secure: "oLlSZ5WsnSgebfWgfGm1H3h7ODWWQ8amQTv6/zunouVuL1SP93iJMaJezFkQgUoKrjoNLrOZfjFjNXtylMckcZZlz/ws6SJrxG2qRhcMxY2uHe58fev6gj1ZU8AqGlfROfk9l5uRRTF7qz4fjEacpulhB+dm7Qjh9wskwrET2tnA/M49SEg90TlRUurfEBhffnW5CM4ZZRcJ0ItbOkVFWFiarCJj2o9TwGWdlDEV404P7tVlKXHZMl8h/OjFOCjvchGLtvicT+pZn97ws8muYU9CUZL8bebgmVxW0BXXfX8GLibUSyUmeBnQrH+hosU15377QjDDRlb1Eun8+clSCk+USfAGSM/lht42Wg6a1fVDAEd3ThF6qE0Mu0oQQa49etOMUU3l6FaN0W6eIuZXQ0Hx6vrtgf4NgO0Q/XPk5qKJaxCx/jX0qDMMAxtaE5tlLDMKJfPqsg9rkiAY0Y4AjhKWozXdnQ8tELC0JGYiZ+Itj1JFzzQD6yERW2GGfpEYIxjCRGuc9n/94+8py4NcKNf2RdaaE5TmViqGMJg37tuWHxu+pjEGEJYleMN/vNYUEYEEl75Z3XE+ttdskOjKYmFgnKqDJKi++7IQ52lwL6e5UhUNqJMkL5qOmTsg0mu9reSOO266Vq7Y06SebMbTC1LgqXHA9LthTJ3rEr4Us5c="
