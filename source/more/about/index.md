@@ -19,38 +19,38 @@ You can visit {% exturl My Resume https://lizitong.ren %} to see more informatio
 
 {% tabs colored-variables %}
 <!-- tab Objective-C -->
-{% label primary@Runtime&nbsp %} {% label info@RunLoop&nbsp %} {% label danger@Category&nbsp %} {% label success@Block&nbsp %} {% label warning@CoreData&nbsp %} 
-{% label warning@Notification&nbsp %} {% label primary@Muti-Thread&nbsp %} {% label danger@KVO&nbsp %} {% label success@KVC&nbsp %}{% label info@Networking&nbsp %} 
-{% label primary@Memory-Management&nbsp %} {% label info@Cocoa&nbsp %}
+{% label primary@Runtime %} {% label info@RunLoop %} {% label danger@Category %} {% label success@Block %} {% label warning@CoreData %} 
+{% label warning@Notification %} {% label primary@Muti-Thread %} {% label danger@KVO %} {% label success@KVC %}{% label info@Networking %} 
+{% label primary@Memory-Management %} {% label info@Cocoa %}
 
 <!-- endtab -->
 
 <!-- tab Swift -->
-{% label primary@Runtime&nbsp %} {% label info@RunLoop&nbsp %} {% label danger@Category&nbsp %} {% label success@Block&nbsp %} {% label warning@CoreData&nbsp %} 
-{% label warning@Notification&nbsp %} {% label primary@Muti-Thread&nbsp %} {% label danger@KVO&nbsp %} {% label success@KVC&nbsp %}{% label info@Networking&nbsp %} 
-{% label primary@Memory-Management&nbsp %} {% label info@Cocoa&nbsp %}
+{% label primary@Runtime %} {% label info@RunLoop %} {% label danger@Category %} {% label success@Block %} {% label warning@CoreData %} 
+{% label warning@Notification %} {% label primary@Muti-Thread %} {% label danger@KVO %} {% label success@KVC %}{% label info@Networking %} 
+{% label primary@Memory-Management %} {% label info@Cocoa %}
 <!-- endtab -->
 
 <!-- tab Build-Tools -->
-{% label primary@Compile&nbsp %} {% label info@Fastlane&nbsp %} {% label danger@Jenkins&nbsp %} {% label success@TravisCI&nbsp %} {% label warning@CocoaPods&nbsp %}
-{% label warning@Carthage&nbsp %} {% label primary@LLVM&nbsp %} {% label danger@Clang&nbsp %} {% label success@Codesign&nbsp %}
+{% label primary@Compile %} {% label info@Fastlane %} {% label danger@Jenkins %} {% label success@TravisCI %} {% label warning@CocoaPods %}
+{% label warning@Carthage %} {% label primary@LLVM %} {% label danger@Clang %} {% label success@Codesign %}
 
 <!-- endtab -->
 
 <!-- tab Architecture -->
-{% label primary@MVC&nbsp %} {% label info@MVVM&nbsp %} {% label danger@MVP&nbsp %} {% label success@VIPER&nbsp %} {% label warning@Design-Pattern&nbsp %}
-{% label warning@函数式编程&nbsp %} {% label primary@响应式编程&nbsp %}
+{% label primary@MVC %} {% label info@MVVM %} {% label danger@MVP %} {% label success@VIPER %} {% label warning@Design-Pattern %}
+{% label warning@函数式编程 %} {% label primary@响应式编程 %}
 <!-- endtab -->
 
 <!-- tab Algorithm -->
 
-{% label primary@Sorting&nbsp %}
+{% label primary@ Sorting  %}
 
 <!-- endtab -->
 
 <!-- tab Testing -->
 
-{% label primary@UnitTesting&nbsp %} {% label info@Debugging&nbsp %} 
+{% label primary@UnitTesting %} {% label info@Debugging %} 
 
 <!-- endtab -->
 
