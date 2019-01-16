@@ -11,6 +11,9 @@ cache:
 install:
   - npm install
 
+before_script:
+  - cp -r next/. themes/next 
+
 script:
   - hexo g
 
