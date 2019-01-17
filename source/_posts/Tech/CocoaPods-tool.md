@@ -196,3 +196,6 @@ CocoaPods在持续集成中发挥得非常好。而且，根据您的项目设�
 <h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">总结</h1>
 
 Cocoapods简化了Objective-C开发流程，我们的目标是提高第三方开放源代码库的可发现性和参与度。了解`Pod install`幕后发生的事情只会帮助你开发出更好的应用程序。我们已经完成了整个过程，从加载`spec`和源代码，创建`.xcodeproj`及其所有组件，到将所有内容写入磁盘。所以下一次，运行`pod install --verbose`并观察魔法的发生。
+
+*********************
+[cocoapods-under-the-hood](https://www.objc.io/issues/6-build-tools/cocoapods-under-the-hood/)

@@ -659,6 +659,9 @@ dyld: loaded: /usr/lib/libauto.dylib
 
 为了简化此过程，OS-X和iOS上的动态链接器使用位于`/var/db/dyld/`内的共享缓存.对于每个体系结构，操作系统都有一个文件，其中包含几乎所有已经链接在一起的动态库，并且它们的相互依赖的符号已经解析。加载Mach-O文件（可执行文件或库）时，动态链接器将首先检查它是否在此共享高速缓存映像中，如果是，则从共享高速缓存中使用它。每个进程都已将此dyld共享缓存映射到其地址空间。 此方法可显着缩短OS X和iOS上的启动时间。
 
+![image](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/deeply-analyse-llvm09.png)
+
 ***********
 
 [Mach-o](https://www.objc.io/issues/6-build-tools/mach-o-executables/#hello-world-and-the-compiler)
+[深入剖析 iOS 编译 Clang LLVM](https://github.com/ming1016/study/wiki/深入剖析-iOS-编译-Clang---LLVM)
