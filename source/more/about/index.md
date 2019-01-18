@@ -19,7 +19,7 @@ You can visit {% exturl My Resume https://lizitong.ren %} to see more informatio
 
 {% tabs colored-variables %}
 <!-- tab Objective-C -->
-{% label primary@Runtime %} {% label info@RunLoop %} {% label danger@Category %} {% label success@Block %} {% label warning@CoreData %} 
+{% label primary@Runtime %} {% label info@RunLoop %} {% label danger@Category %} {% label success@Block %} {% label warning@CoreData %} {% label primary@Location %} {% label info@Http/Https %} {% label danger@Socket/TCP %} {
 {% label warning@Notification %} {% label primary@Muti-Thread %} {% label danger@KVO %} {% label success@KVC %}{% label info@Networking %} 
 {% label primary@Memory-Management %} {% label info@Cocoa %}
 
@@ -33,13 +33,31 @@ You can visit {% exturl My Resume https://lizitong.ren %} to see more informatio
 
 <!-- tab Build-Tools -->
 {% label primary@Compile %}  {% label info@Fastlane %}  {% label danger@Jenkins %}  {% label success@TravisCI %}  {% label warning@CocoaPods %}
-{% label warning@Carthage %}  {% label primary@LLVM %}  {% label danger@Clang %}  {% label success@Codesign %}  {% label info@Xcode %}  {% label info@Hexo %}
+{% label warning@Carthage %}  {% label primary@LLVM %}  {% label danger@Clang %}  {% label warning@Xcodebuild %}  {% label primary@Framework %}  {% label danger@Git %}  
+{% label success@Codesign %}  {% label info@Xcode %}  {% label info@Hexo %} {% label primary@Docker %}  {% label danger@Charles %} 
 
 <!-- endtab -->
 
 <!-- tab Architecture -->
 {% label primary@MVC %}  {% label info@MVVM %}  {% label danger@MVP %}  {% label success@VIPER %}  {% label warning@Design-Pattern %}
 {% label warning@函数式编程 %}  {% label primary@响应式编程 %}
+{% label info@组件化 %}  
+
+<!-- endtab -->
+
+<!-- tab 性能优化 -->
+
+{% label primary@ 电量优化  %}  
+{% label info@流量优化 %}  
+{% label danger@启动时间 %}   
+<!-- endtab -->
+
+<!-- tab 热门技术 -->
+
+{% label primary@ Flutter  %}   {% label danger@小程序 %} 
+{% label info@RxSwift %}  {% label danger@Vue %} 
+{% label danger@动态化 %}   
+
 <!-- endtab -->
 
 <!-- tab Algorithm -->
@@ -50,7 +68,9 @@ You can visit {% exturl My Resume https://lizitong.ren %} to see more informatio
 
 <!-- tab Testing -->
 
-{% label primary@UnitTesting %} {% label info@Debugging %} 
+{% label primary@UnitTesting %} 
+{% label info@Debugging %} 
+
 
 <!-- endtab -->
 
