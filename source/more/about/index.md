@@ -18,8 +18,8 @@ You can visit {% exturl My Resume https://lizitong.ren %} to see more informatio
 ---
 
 {% tabs colored-variables %}
-<!-- tab Objective-C -->
-{% label primary@Runtime %} {% label info@RunLoop %} {% label danger@Category %} {% label success@Block %} {% label warning@CoreData %} {% label primary@Location %} {% label info@Http/Https %} {% label danger@Socket/TCP %} {
+<!-- tab OC -->
+{% label primary@Runtime %} {% label info@RunLoop %} {% label danger@Category %} {% label success@Block %} {% label warning@CoreData %} {% label primary@Location %} {% label info@Http/Https %} {% label danger@Socket/TCP %} 
 {% label warning@Notification %} {% label primary@Muti-Thread %} {% label danger@KVO %} {% label success@KVC %}{% label info@Networking %} 
 {% label primary@Memory-Management %} {% label info@Cocoa %}
 
@@ -31,7 +31,7 @@ You can visit {% exturl My Resume https://lizitong.ren %} to see more informatio
 {% label primary@Memory-Management %}  {% label info@Cocoa %}
 <!-- endtab -->
 
-<!-- tab Build-Tools -->
+<!-- tab Building -->
 {% label primary@Compile %}  {% label info@Fastlane %}  {% label danger@Jenkins %}  {% label success@TravisCI %}  {% label warning@CocoaPods %}
 {% label warning@Carthage %}  {% label primary@LLVM %}  {% label danger@Clang %}  {% label warning@Xcodebuild %}  {% label primary@Framework %}  {% label danger@Git %}  
 {% label success@Codesign %}  {% label info@Xcode %}  {% label info@Hexo %} {% label primary@Docker %}  {% label danger@Charles %} 
@@ -74,7 +74,7 @@ You can visit {% exturl My Resume https://lizitong.ren %} to see more informatio
 
 <!-- endtab -->
 
-<!-- tab Source-Code  -->
+<!-- tab SourceCode  -->
 
 1. Go to NexT version {% exturl Release Page https://github.com/theme-next/hexo-theme-next/releases %}.
 2. Choose the version you need and download the Source Code (zip) in the Download section. For example v6.0.0.
