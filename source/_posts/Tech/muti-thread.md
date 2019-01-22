@@ -110,7 +110,7 @@ int main(int argc, const char * argv[])
 }
 ```
 
-`NSThread`是对`pthread`的一个比较简单的封装。这让我们的代码看起来更像cocoa环境。
+`NSThread`是对`pthread`的一个比较简单的封装。这让我们的代码看起来更像cocoa环境。测试
 
 
 
@@ -139,3 +139,5 @@ int main(int argc, const char * argv[])
 ## 优先级反转
 
 <h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">结论</h1>
+
+
