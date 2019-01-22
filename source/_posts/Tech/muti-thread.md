@@ -33,9 +33,84 @@ Apple为OSX和iOS提供了并发编程相同的API接口。下面我们会介绍
 
 你可以使用[CPU strategy view](http://developer.apple.com/library/mac/#documentation/DeveloperTools/Conceptual/InstrumentsUserGuide/AnalysingCPUUsageinYourOSXApp/AnalysingCPUUsageinYourOSXApp.html)来探究你的代码或者framework在多个CPU上是如何被调度的。
 
-有个重要的问题就是你没有办法控制你的代码何时何地进行执行，并且也无法预知什么时候会因为其他任务的执行而被终止。
+有个重要的问题就是你没有办法控制你的代码何时何地进行执行，并且也无法预知什么时候会因为其他任务的执行而被终止。这样的线程调度是很强大的技术。但是也带来了巨大的复杂性，我们后面会遇到。
 
+先不考虑线程调度的复杂性，你既可以使用 [POSIX thread](http://en.wikipedia.org/wiki/POSIX_Threads) 底层API，也可以使用OC对他的封装 `NSThread`来创建你的线程。下面是使用`pthread`来从一亿的数据中找到最大值和最小值。它产生了4个并行运行的线程，从这个例子你可以看出为什么不直接使用`pthread`:
 
+```objectivec
+#import <pthread.h>
+
+struct threadInfo {
+    uint32_t * inputValues;
+    size_t count;
+};
+
+struct threadResult {
+    uint32_t min;
+    uint32_t max;
+};
+
+void * findMinAndMax(void *arg)
+{
+    struct threadInfo const * const info = (struct threadInfo *) arg;
+    uint32_t min = UINT32_MAX;
+    uint32_t max = 0;
+    for (size_t i = 0; i < info->count; ++i) {
+        uint32_t v = info->inputValues[i];
+        min = MIN(min, v);
+        max = MAX(max, v);
+    }
+    free(arg);
+    struct threadResult * const result = (struct threadResult *) malloc(sizeof(*result));
+    result->min = min;
+    result->max = max;
+    return result;
+}
+
+int main(int argc, const char * argv[])
+{
+    size_t const count = 1000000;
+    uint32_t inputValues[count];
+
+    // Fill input values with random numbers:
+    for (size_t i = 0; i < count; ++i) {
+        inputValues[i] = arc4random();
+    }
+
+    // Spawn 4 threads to find the minimum and maximum:
+    size_t const threadCount = 4;
+    pthread_t tid[threadCount];
+    for (size_t i = 0; i < threadCount; ++i) {
+        struct threadInfo * const info = (struct threadInfo *) malloc(sizeof(*info));
+        size_t offset = (count / threadCount) * i;
+        info->inputValues = inputValues + offset;
+        info->count = MIN(count - offset, count / threadCount);
+        int err = pthread_create(tid + i, NULL, &findMinAndMax, info);
+        NSCAssert(err == 0, @"pthread_create() failed: %d", err);
+    }
+    // Wait for the threads to exit:
+    struct threadResult * results[threadCount];
+    for (size_t i = 0; i < threadCount; ++i) {
+        int err = pthread_join(tid[i], (void **) &(results[i]));
+        NSCAssert(err == 0, @"pthread_join() failed: %d", err);
+    }
+    // Find the min and max:
+    uint32_t min = UINT32_MAX;
+    uint32_t max = 0;
+    for (size_t i = 0; i < threadCount; ++i) {
+        min = MIN(min, results[i]->min);
+        max = MAX(max, results[i]->max);
+        free(results[i]);
+        results[i] = NULL;
+    }
+
+    NSLog(@"min = %u", min);
+    NSLog(@"max = %u", max);
+    return 0;
+}
+```
+
+`NSThread`是对`pthread`的一个比较简单的封装。这让我们的代码看起来更像cocoa环境。
 
 
 
@@ -49,15 +124,7 @@ Apple为OSX和iOS提供了并发编程相同的API接口。下面我们会介绍
 
 ## Run Loops
 
-
-
-
-
 <h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">并发编程的挑战</h1>
-
-
-
-
 
 <h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">编程实践</h1>
 
@@ -72,5 +139,3 @@ Apple为OSX和iOS提供了并发编程相同的API接口。下面我们会介绍
 ## 优先级反转
 
 <h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">结论</h1>
-
-
