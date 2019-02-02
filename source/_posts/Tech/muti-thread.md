@@ -110,11 +110,57 @@ int main(int argc, const char * argv[])
 }
 ```
 
-`NSThread`是对`pthread`的一个比较简单的封装。这让我们的代码看起来更像cocoa环境。测试
+`NSThread`是对`pthread`的一个比较简单的封装。这让我们的代码看起来更像cocoa环境。比如，你可以定义自己的一个类作为 `NSThread`的子类，在这个类里面你可以封装你在后台执行的代码。对于上面的例子，我们可以定义下面的子类：
 
+```objective-c
+@interface FindMinMaxThread : NSThread
+@property (nonatomic) NSUInteger min;
+@property (nonatomic) NSUInteger max;
+- (instancetype)initWithNumbers:(NSArray *)numbers;
+@end
 
+@implementation FindMinMaxThread {
+    NSArray *_numbers;
+}
 
+- (instancetype)initWithNumbers:(NSArray *)numbers 
+{
+    self = [super init];
+    if (self) {
+        _numbers = numbers;
+    }
+    return self;
+}
 
+- (void)main
+{
+    NSUInteger min;
+    NSUInteger max;
+    // process the data
+    self.min = min;
+    self.max = max;
+}
+@end
+```
+
+为了开启一个新的线程，我们需要创建一个新的线程对象并且调用他们的 `start`方法：
+
+```objective-c
+NSMutableSet *threads = [NSMutableSet set];
+NSUInteger numberCount = self.numbers.count;
+NSUInteger threadCount = 4;
+for (NSUInteger i = 0; i < threadCount; i++) {
+    NSUInteger offset = (numberCount / threadCount) * i;
+    NSUInteger count = MIN(numberCount - offset, numberCount / threadCount);
+    NSRange range = NSMakeRange(offset, count);
+    NSArray *subset = [self.numbers subarrayWithRange:range];
+    FindMinMaxThread *thread = [[FindMinMaxThread alloc] initWithNumbers:subset];
+    [threads addObject:thread];
+    [thread start];
+}
+```
+
+现在我们可以观测线程的属性 `isFinished` 判断一个线程是不是执行完毕，这样我们可以在计算结果之前判断所有的线程是不是运行完成。
 
 
 
