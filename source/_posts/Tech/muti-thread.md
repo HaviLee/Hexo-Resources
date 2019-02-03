@@ -160,11 +160,27 @@ for (NSUInteger i = 0; i < threadCount; i++) {
 }
 ```
 
-现在我们可以观测线程的属性 `isFinished` 判断一个线程是不是执行完毕，这样我们可以在计算结果之前判断所有的线程是不是运行完成。
+现在我们可以观测线程的属性 `isFinished` 判断一个线程是不是执行完毕，这样我们可以在计算结果之前判断所有的线程是不是运行完成。我们将这个留给读者自己实现。直接使用线程比如 `pthread`或者 `NSThread`,这是一个相对笨重的体验，而且不能很好的体现我们的面向对象编程。
 
+直接使用线程可能产生一个问题是，**如果你的代码和底层框架都生成了自己的线程，则活跃的线程的数量将会呈指数级增长**。这在大的项目中是一个常见的问题。比如，你创建了8个线程以利用8个CPU内核，并且从这些线程调用的框架代码执行相同的操作，因为它不知道您已经创建了线程，那么就会很快产生几十个线程。每个线程都应该负责自己的代码部分，至少，最后的结果是没有问题的。线程不是免费的资源。每个线程都会浪费内存和内核资源。
 
+下面我们会讨论下两个并发API: `Grand Central Dispatch` 和 `Operation Queue`。这两个API通过我们日常使用的[线程池管理](http://en.wikipedia.org/wiki/Thread_pool_pattern)来解决上面的问题。
 
-## GCD
+## GCD-Grand Central Dispatch
+
+GCD是在OSX 10.6和iOS4引入的新的API,目的是为了帮助开发者更好的利用设备的多个CPU内核。我们会在下面的文章[article about low-level concurrency APIs](https://www.objc.io/issues/2-concurrency/low-level-concurrency-apis/)中详细介绍一些GCD的底层。
+
+使用GCD你不需要在直接和线程打交道。你不需要把你的代码片段放到一个队列中，GCD在底层会帮助我们管理一个[线程池](http://en.wikipedia.org/wiki/Thread_pool_pattern)。GCD决定你的代码片段会在哪个线程上执行，并且会根据可用的系统资源管理这些线程。这可以解决在开发过程中会创建过多的线程问题，因为使用GCD这些线程是由线程池管理。
+
+使用GCD另外一个重要的改变就是：你考虑的是队列中任务而不需要考虑线程中的任务。这种新的处理并发的模型很容易操作。
+
+GCD暴露了5个不同的队列：**{% label danger@在主线程运行的main 队列,具有不同优先级的三个后台队列，和一个具有更低优先级的后台队列—I/O操作 %}**.当然你也可以创建自定义队列，可以是串行队列也可以是并行队列。虽然自定义队列是一个强大的抽象, 但您在它们上安排的所有块最终都会细流到系统的全局队列及其线程池中。
+
+![image](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/thread.png)
+
+对不同的队列使用不同的优先级听起来很前卫。但是，建议不要使用优先级，使用默认的优先级就好了。在具有不同优先级的队列上安排任务可能会很快导致意外行为, 特别这些任务访问共享资源。这可能会导致整个程序停顿, 因为一些低优先级的任务阻碍了高优先级任务的执行。你可以在下面阅读更多关于这种现象的信息, 称为[优先级倒置](https://www.objc.io/issues/2-concurrency/concurrency-apis-and-pitfalls/#priority-inversion)。
+
+尽管GCD是一个底层C 的API,但是很方便使用。这使得人们很容易忘记, 在将代码块调度到 gcd 队列时, 并发编程的所有警告和陷阱仍然适用。建议阅读下面的[challenges of concurrent programming](https://www.objc.io/issues/2-concurrency/concurrency-apis-and-pitfalls/#challenges-of-concurrent-programming)来避免潜在的问题。后面我们会对GCD API做一个详细的演示，这些演示包含了一些有价值的解释。
 
 ## Operation Queues
 
