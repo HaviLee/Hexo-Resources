@@ -184,6 +184,10 @@ GCD暴露了5个不同的队列：**{% label danger@在主线程运行的main �
 
 ## Operation Queues
 
+操作队列是对GCD暴露出来的接口的封装。尽管GCD提供了更多的底层的代码控制，操作队列是基于GCD的一些便捷的方法，这些方法是对于程序员更加的便捷和安全。
+
+
+
 ## Run Loops
 
 <h1 style="border-bottom: 1px solid #ddddd8; margin-top:1px;margin-bottom:20px">并发编程的挑战</h1>
