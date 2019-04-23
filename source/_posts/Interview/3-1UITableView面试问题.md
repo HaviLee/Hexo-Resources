@@ -112,7 +112,7 @@ cell = [tableView dequeueReuseableCellWithIdentifier:@"cell"];
 
 自定义Tableview:
 
-```c++
+```python
 #import <UIKit/UIKit.h>
 
 
@@ -128,7 +128,7 @@ cell = [tableView dequeueReuseableCellWithIdentifier:@"cell"];
 @end
 ```
 
-```c++
+```python
 #import "IndexedTableView.h"
 #import "ViewReusePool.h"
 @interface IndexedTableView ()
