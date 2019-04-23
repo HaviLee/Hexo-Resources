@@ -36,7 +36,7 @@ cell = [tableView dequeueReuseableCellWithIdentifier:@"cell"];
 
 自定义重用池实现
 
-```objective-c
+```c++
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 // 实现重用机制的类
@@ -54,7 +54,7 @@ cell = [tableView dequeueReuseableCellWithIdentifier:@"cell"];
 @end
 ```
 
-```objective-c
+```c++
 #import "ViewReusePool.h"
 
 @interface ViewReusePool ()
@@ -112,7 +112,7 @@ cell = [tableView dequeueReuseableCellWithIdentifier:@"cell"];
 
 自定义Tableview:
 
-```objective-c
+```c++
 #import <UIKit/UIKit.h>
 
 
@@ -128,7 +128,7 @@ cell = [tableView dequeueReuseableCellWithIdentifier:@"cell"];
 @end
 ```
 
-```objective-c
+```c++
 #import "IndexedTableView.h"
 #import "ViewReusePool.h"
 @interface IndexedTableView ()
