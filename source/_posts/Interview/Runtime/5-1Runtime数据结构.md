@@ -1,7 +1,7 @@
 ---
 title: Runtime数据结构
 keywords: iOS面试
-date: 2019-04-27 15:47:40
+date: 2019-04-27 18:47:40
 categories: 
   - 面试
 tags:
@@ -11,11 +11,11 @@ comments: true
 
 动态运行时(Runtime)
 
-`编译语言和OC的动态语言的区别？`
+**<u>编译语言和OC的动态语言的区别？</u>**
 
-`消息传递和函数调用的区别？`
+**<u>消息传递和函数调用的区别？</u>**
 
-`消息转发过程？`
+**<u>消息转发过程？</u>**
 
 ![4-5-1](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/5-1-1.png)
 
@@ -46,7 +46,7 @@ comments: true
 
 isa_t是一个共同体，共同体是64个0.isa分为指针型isa和非指针型的isa.
 
-### `isa指向`
+### isa指向
 
 - 关于`对象`，isa指向`类对象`
 

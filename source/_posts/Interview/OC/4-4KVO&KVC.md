@@ -11,21 +11,21 @@ comments: true
 
 # KVO面试相关
 
-## `什么是KVO？`
+**<u>什么是KVO？</u>**
 
 - KVO是Key-Value observing的缩写。
 - KVO是Objective-C对`观察者设计模式`的实现。
 - App使用了isa 混写(isa-swizzing)来实现KVO。
 
-## `isa-swizzing是如何实现KVO的？`
+**<u>isa-swizzing是如何实现KVO的？`</u>**
 
 当我们注册一个观察者的时候，调用addobserver的时候，系统会为我们动态的创建一个NSKVONotifying_A的类，同时将原来类的isa指针指向新创建的类
 
-## `KVO的实现机制是怎样的？`
+**<u>KVO的实现机制是怎样的？`</u>**
 
 ![4-4-4](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/4-4-1.png)
 
-## KVO代码实现
+# KVO代码实现
 
 ```python
 #import <Foundation/Foundation.h>
@@ -106,7 +106,7 @@ MObject *obj = [[MObject alloc] init];
     [obj increase];
 ```
 
-## `重写的setter添加的方法`
+# 重写的setter添加的方法
 
 必须实现下面两个方法：
 
@@ -117,7 +117,7 @@ MObject *obj = [[MObject alloc] init];
 
 didChangeValue会触发我们的observer回调方法。
 
-##### `通过KVC设置value能否生效？`
+**<u>通过KVC设置value能否生效？`</u>**
 
 ```python
 [obj setValue:@2 forKey:@"value"];
@@ -125,7 +125,7 @@ didChangeValue会触发我们的observer回调方法。
 
 是可以的，为什么可以生效呢，下面的KVC的实现原理。就是答案。其实setValue底层是可以调用属性的setter方法的。
 
-##### `通过成员变量直接赋值value能否生效？`
+**<u>通过成员变量直接赋值value能否生效？`</u>**
 
 ```python
 _value += 1;
@@ -144,7 +144,7 @@ _value += 1;
 
 
 
-## 总结：
+# 总结：
 
 - 使用setter方法改变值KVO才可以生效
 - 使用KVC setValue:forKey:可以使KVO生效
@@ -152,24 +152,24 @@ _value += 1;
 
 # KVC面试相关
 
-## `什么是KVC?`
+**<u>什么是KVC?</u>**
 
 KVC是key-value coding的缩写，一种键值编码技术。
 
 - `-(id)valueForKey:(NSString*)key`
 - `-(void)setValue:(id)value forKey:(NSString *)key`
 
-##### `通过键值编码技术会不会破坏面向对象编程？`
+**<u>通过键值编码技术会不会破坏面向对象编程</u>**？
 
 vauleForKey和setValue:ForKey中的key是没有任何限制的，也就是说在我们知道一个类或者实例它内部某一个私有成员变量的名称的情况下，在外界可以通过这个key对这个成员变量修改，因此会破会。
 
-## `valueForKey系统实现流程？`
+## valueForKey系统实现流程?
 
 ![4-4-4](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/4-4-3.png)
 
 系统首先根据这个key判断是否有get(访问器)方法，有的话直接调用，没有的话会判断实例变量是否存在，存在的话，可以访问，没有的话，会抛出一个找不到key的异常。accessInstanceVariablesDirectly可以控制实例变量是不是可以访问到。
 
-##### `访问器方法是否存在的判断规则？`
+**<u>访问器方法是否存在的判断规则？`</u>**
 
 Accessor Method:在获取一个和key同名或者相似的实例变量的时候，
 
@@ -177,7 +177,7 @@ Accessor Method:在获取一个和key同名或者相似的实例变量的时候�
 - `<key>`:直接使用key
 - `<isKey>`
 
-##### `根据key获取的成员变量是哪个？`
+**<u>根据key获取的成员变量是哪个？`</u>**
 
 - _key
 - _isKey
@@ -186,7 +186,7 @@ Accessor Method:在获取一个和key同名或者相似的实例变量的时候�
 
 都可以满足成员变量的获取。
 
-## `setValue:ForKey的实现流程`
+## setValue:ForKey的实现流程
 
 ![4-4-4](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/4-4-4.png)
 
