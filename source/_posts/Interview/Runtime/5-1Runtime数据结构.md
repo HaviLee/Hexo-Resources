@@ -11,11 +11,11 @@ comments: true
 
 动态运行时(Runtime)
 
-**<u>编译语言和OC的动态语言的区别？</u>**
+**<u>`编译语言和OC的动态语言的区别？`</u>**
 
-**<u>消息传递和函数调用的区别？</u>**
+**<u>`消息传递和函数调用的区别？`</u>**
 
-**<u>消息转发过程？</u>**
+**<u>`消息转发过程？`</u>**
 
 ![4-5-1](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/5-1-1.png)
 
