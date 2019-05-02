@@ -116,3 +116,10 @@ RACSubscriber订阅流程
 3. **当RunLoop进入休眠前，ASDK执行loop内提交的所有任务**
 
 ![4-5-1](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/14-1-13.png)
+
+![4-5-1](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/14-1-14.png)
+
+![4-5-1](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/14-1-15.png)
+
+![4-5-1](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/14-1-16.png)
+
