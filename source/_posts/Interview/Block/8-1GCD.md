@@ -207,6 +207,63 @@ dispatch_barrier_async(concurrent_queue, ^{//写操作})
 @end
 ```
 
+```c++
+dispatch_queue_t concurrentQueue1= dispatch_queue_create("www.goole.com", DISPATCH_QUEUE_CONCURRENT);
+    
+    /********************模拟读取操作********************/
+     dispatch_async(concurrentQueue1, ^{
+         for (int i=0; i<1000; i++) {
+             int index=arc4random()%12;
+             NSLog(@"读取任务-%@",self.array[index]);
+         }
+     });
+     dispatch_async(concurrentQueue1, ^{
+         for (int i=0; i<1000; i++) {
+             int index=arc4random()%12;
+             NSLog(@"读取任务二%@",self.array[index]);
+         }
+     });
+     dispatch_async(concurrentQueue1, ^{
+         for (int i=0; i<1000; i++) {
+             int index=arc4random()%12;
+             NSLog(@"读取任务三%@",self.array[index]);
+         }
+    });
+    
+    
+    /********************模拟写入操作********************/
+    dispatch_barrier_async(concurrentQueue1, ^{
+        [self.array removeAllObjects];
+        [self.array addObjectsFromArray:@[@"aaa",@"bbb",@"ccc",@"ddd",@"eee",@"qqq",@"ccc",@"fff",@"ggg",@"rrr",@"bbb",@"jjj"]];
+    });
+
+    
+    
+    
+    dispatch_async(concurrentQueue1, ^{
+        for (int i=0; i<100; i++) {
+            int index=arc4random()%12;
+            NSLog(@"读取任务四%@",self.array[index]);
+        }
+    });
+    dispatch_async(concurrentQueue1, ^{
+        for (int i=0; i<100; i++) {
+            int index=arc4random()%12;
+            NSLog(@"读取任务五%@",self.array[index]);
+        }
+    });
+    dispatch_async(concurrentQueue1, ^{
+        for (int i=0; i<100; i++) {
+            int index=arc4random()%12;
+            NSLog(@"读取任务六%@",self.array[index]);
+        }
+    });
+    
+//结论:打印结果会是 读取任务一二三 执行完之后 执行写入操作,写入操作执行完之后最后执行 读取任务四五六
+```
+
+
+
 # Dispatch_group_async()
 
 `使用GCD实现这个需求：A、B、C三个任务并发，完成之后执行任务D?`
@@ -264,4 +321,7 @@ dispatch_barrier_async(concurrent_queue, ^{//写操作})
 }
 
 ```
+
+[队列]: https://juejin.im/post/5b28ca5de51d4558e03cc847	"队列"
+[栅栏应用]: https://juejin.im/post/5c4a9ed6e51d45599635c38e	"栅栏"
 

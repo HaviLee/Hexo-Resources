@@ -232,3 +232,5 @@ static void _I_MCBlock_method(MCBlock * self, SEL _cmd) {
 }
 ```
 
+[Block本质]: https://www.jianshu.com/nb/16449096	"block"
+
