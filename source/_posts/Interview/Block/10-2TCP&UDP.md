@@ -176,13 +176,13 @@ A:简单来说：我们的应用程序发送方，接收方server，比如发送
 
 
 
-[Socket]: https://www.jianshu.com/p/a5614e149f8a	"使用socket建立"
+![socket](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/socket.png)
+
+![socket](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/Tech/tcp&udp.png)
 
 
 
-
-
-
+[socket](https://www.jianshu.com/p/a5614e149f8a)
 
 **TCP（Transmission Control Protocol 传输控制协议）**
 
