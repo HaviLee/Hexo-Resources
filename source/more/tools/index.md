@@ -4,6 +4,7 @@ date: 2019-01-10 14:46:55
 ---
 
 <HTML>
+
 	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
 	<p>
 		<H3 >新闻</H3>
@@ -80,9 +81,14 @@ date: 2019-01-10 14:46:55
 			<A HREF="https://www.pinterest.com/">Pinterest</A>
 			<A HREF="https://www.quora.com/">Home - Quora</A>
 		<p>
+	  
+	</meta>
+
+
 
 	<H3 >Reading List</H3>
 	<p>
+	
 		<A HREF="http://www.cnblogs.com/jinglecode/p/7753107.html">Android API level 与version对应关系 - 鲸歌 - 博客园</A>
 		<A HREF="https://stackoverflow.com/questions/49284293/using-universal-links-for-deeplinking-in-push-notifications-on-ios">Using Universal Links for DeepLinking in Push Notifications on iOS - Stack Overflow</A>
 		<A HREF="http://www.cocoachina.com/ios/20150228/11206.html">使用Cocoapods创建私有podspec</A>
@@ -190,18 +196,18 @@ date: 2019-01-10 14:46:55
 		<p>
 		<H3 >技术网站</H3>
 		<p>
-            <A HREF="http://blog.csdn.net/koala_tree/article/category/7186915">Deeplarning-homework</A>
-            <A HREF="http://blog.csdn.net/Koala_Tree/article/details/78216371">吴恩达Coursera深度学习课程 DeepLearning.ai 编程作业（2-2） - CSDN博客</A>
-            <A HREF="http://www.json.cn/#">Itineray.JSON</A>
-            <A HREF="http://keras-cn.readthedocs.io/en/latest/blog/keras_and_tensorflow/">Keras中文文档</A>
-            <A HREF="https://mp.weixin.qq.com/s/tpZrXD9eWF5IcHeGCEw2HQ">Python 入门</A>
-            <A HREF="http://python.jobbole.com/category/project/">实践项目 - Python - 伯乐在线</A>
-            <A HREF="http://beautifulsoup.readthedocs.io/zh_CN/latest/">Beautiful Soup 4.4.0 文档 — beautifulsoup 4.4.0 文档</A>
-            <A HREF="http://bootstrap.kinghack.com/getting-started.html">Bootstrap框架-Bootstrap学习</A>
-            <A HREF="http://www.jianshu.com/c/22f2ca261b85">Pythoner集中营 - 专题 - 简书</A>
-            <A HREF="https://www.codewars.com/">Train with Programming Challenges/Kata | Codewars</A>
-            <A HREF="http://keras-cn.readthedocs.io/en/latest/">Keras中文文档</A>
-            <A HREF="http://www.infoq.com/cn/articles/serialization-and-deserialization">序列化和反序列化</A>
+	        <A HREF="http://blog.csdn.net/koala_tree/article/category/7186915">Deeplarning-homework</A>
+	        <A HREF="http://blog.csdn.net/Koala_Tree/article/details/78216371">吴恩达Coursera深度学习课程 DeepLearning.ai 编程作业（2-2） - CSDN博客</A>
+	        <A HREF="http://www.json.cn/#">Itineray.JSON</A>
+	        <A HREF="http://keras-cn.readthedocs.io/en/latest/blog/keras_and_tensorflow/">Keras中文文档</A>
+	        <A HREF="https://mp.weixin.qq.com/s/tpZrXD9eWF5IcHeGCEw2HQ">Python 入门</A>
+	        <A HREF="http://python.jobbole.com/category/project/">实践项目 - Python - 伯乐在线</A>
+	        <A HREF="http://beautifulsoup.readthedocs.io/zh_CN/latest/">Beautiful Soup 4.4.0 文档 — beautifulsoup 4.4.0 文档</A>
+	        <A HREF="http://bootstrap.kinghack.com/getting-started.html">Bootstrap框架-Bootstrap学习</A>
+	        <A HREF="http://www.jianshu.com/c/22f2ca261b85">Pythoner集中营 - 专题 - 简书</A>
+	        <A HREF="https://www.codewars.com/">Train with Programming Challenges/Kata | Codewars</A>
+	        <A HREF="http://keras-cn.readthedocs.io/en/latest/">Keras中文文档</A>
+	        <A HREF="http://www.infoq.com/cn/articles/serialization-and-deserialization">序列化和反序列化</A>
 			<A HREF="http://github.ibireme.com/github/list/ios/#">Github项目地址-源码</A>
 			<A HREF="http://www.oschina.net/ios/home">开源中国-源码</A>
 			<A HREF="http://www.code4app.com/">code4app-源码</A>
@@ -382,7 +388,7 @@ date: 2019-01-10 14:46:55
 			<A HREF="http://kayosite.com/ios-development-and-detail-of-photo-framework.html">iOS 开发之照片框架详解 | Kayo's Melody</A>
 			<A HREF="http://wereadteam.github.io/">WeRead团队博客</A>
 			<A HREF="http://awhisper.github.io/">折腾范儿の味精</A>
-			<A HREF="http://numbbbbb.com/2016/08/02/20160802_%E5%85%B3%E4%BA%8E%E4%BA%A7%E5%93%81%EF%BC%8C%E4%BD%A0%E7%9F%A5%E9%81%93%E7%9A%84%E9%83%BD%E6%98%AF%E9%94%99%E7%9A%84/">关于产品，你知道的都是错的 · 梁杰的个人博客</A>
+			<A HREF="http://numbbbbb.com">关于产品，你知道的都是错的 · 梁杰的个人博客</A>
 			<A HREF="https://everettjf.github.io/2016/06/19/reverse-explore-wechat-message-design">逆向探索微信消息界面实现</A>
 			<A HREF="http://blog.seedlab.io/">Get Schwifty</A>
 			<A HREF="http://blog.kyleduo.com/">Kyleduo's blog!</A>
@@ -449,6 +455,7 @@ date: 2019-01-10 14:46:55
 			<A HREF="http://blog.guitapro.com/ios-coretext-render-system/">iOS开发, CoreText,图文混排,TextKit,文本处理</A>
 			<A HREF="https://www.safaribooksonline.com/register-topics/">Get Started: Safari</A>
 			<A HREF="http://www.starming.com/index.php">Starming星光社</A>
+			<A HREF="http://xelz.info/blog/2019/01/11/ios-code-signature/">iOS签名</A>
 		<p>
 		<H3 >购物</H3>
 		<p>
@@ -462,7 +469,9 @@ date: 2019-01-10 14:46:55
 		<p>
 		<H3 >开发工具</H3>
 		<p>
+			<A HREF="https://dashboard.ngrok.com/get-started/">将本地网络映射为外网</A>
 			<A HREF="http://www.appcoda.com/">AppCoda Community-工具</A>
+			<A HREF="https://tools.zzzmode.com/mytools/charles//">Charles 破解工具</A>
 			<A HREF="http://constraints.icodeforlove.com/">iOS/Mac在线编辑约束-工具</A>
 			<A HREF="http://www.osstatus.com/">OSStatus检测API报错-工具</A>
 			<A HREF="http://geticonjar.com/freebies/">Freebies • Iconjar-图片工具</A>
@@ -560,16 +569,16 @@ date: 2019-01-10 14:46:55
 			<A HREF="https://treation.com/">Treation</A>
 			<A HREF="http://www.zcool.com.cn/u/13134153">七周的个人主页 - 站酷 (ZCOOL)</A>
 			<A HREF="http://www.onethink.cn/topic/729.html">OneThink内容管理框架</A>
-        </p>
+	    </p>
 		<H3 >RSS</H3>
 		<p>
-            <A HREF="https://www.inoreader.com/all_articles">Inoreader</A>
-            <A HREF="http://www.yilan.io/home/">一览</A>
+	        <A HREF="https://www.inoreader.com/all_articles">Inoreader</A>
+	        <A HREF="http://www.yilan.io/home/">一览</A>
 			<A HREF="https://feedly.com/i/discover/sources/search/topic/geek">Feedly</A>
 			<A HREF="https://getpocket.com/a/recommended/">Pocket</A>
 			<A HREF="http://www.newsblur.com/">NewsBlur</A>
 			<A HREF="http://zh.mygeoposition.com/#links">免费地理编译，地理译码</A>
-        </p>
+	    </p>
 	<p>
 </HTML>
 
