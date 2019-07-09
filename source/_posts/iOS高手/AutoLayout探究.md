@@ -7,10 +7,6 @@ tags: [iOS 高手]
 
 # Auto Layout是如何自动布局的？
 
-
-
-
-
 # Auto Layout的来历
 
 Auto Layout是苹果自己开发的布局引擎，背后使用的**布局算法是** [Cassowary](https://overconstrained.io/) 。
@@ -49,7 +45,35 @@ Auto Layout只是一种基础的布局思路。前端之前出现了 FlexBox高�
 
 UIStackView会在父视图中设置子视图的排列方式，比如Fill,Leading/Center,而不用在每个子视图中设置自己和兄弟视图的关系。
 
-
+> 自动布局会在哪个时机拿到相应的Frame和Center? Auto Layout如何做动画？
+>
+> 1. Layout Engine 会从上到下调用 layoutSu... 这个部份。
+>
+> 2. 动画的话。因为布局约束就是要脱离frame这种表达方式的，可是动画是需要根据这个来执行， 这里面就会有些矛盾，不过根据前面说到的布局约束的原理，在某个时刻约束也是会被还原成 frame使视图显示，这个时刻可以通过layoutIfNeeded这个方法来进行控制。具体代码如下 
+>
+>    ```c
+>    [aniView mas_makeConstraints:^(MASConstraintMaker *make) { make.top.bottom.left.right.equalTo(self.view).offset(10); 
+>    
+>    }]; 
+>    
+>    [aniView mas_updateConstraints:^(MASConstraintMaker *make) { make.top.equalTo(self.view).offset(30); 
+>    
+>    }]; 
+>    
+>    [UIView animateWithDuration:3 animations:^{ [self.view layoutIfNeeded]; 
+>    
+>    }]; 
+>    ```
+>
+>    
 
 [自定义的DSL](https://github.com/ming1016/STMAssembleView)
+
+参考：
+
+[详细的AutoLayout]( https://ming1016.github.io/2015/11/03/deeply-analyse-autolayout)
+
+[Cell中Label高度自适应](https://github.com/ming1016/study/wiki/Masonry)
+
+[详细的代码demo](https://github.com/ming1016/ShowAutoLayout)
 
