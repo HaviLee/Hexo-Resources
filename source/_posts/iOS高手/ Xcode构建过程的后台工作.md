@@ -137,16 +137,101 @@ tags: [iOS 高手]
 
 # Clang编译器
 
-Clang是Apple的官方编译器。
+Clang是Apple的官方编译器。用于所有C语言，比如C、C++、OC。
 
 ## 头文件映射
 
+![编译过程](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/Screen%20Shot%202019-07-11%20at%209.53.01%20PM.png)
+
+编译器一次性编译多个的输入文件，仅仅生成一个输入文件，之后被链接器使用。如果想要从访问OS层的API，或者访问自己的代码实现，就需要一个叫做 **头文件** 的东西。头文件就是一种保证，像编译器保证在其他地方存在这个实现文件，通常头文件和实现是匹配的。但是如果你只更新了实现文件，而忘记了头文件，这时候，在编译阶段不会有问题，但是在运行时就会出现问题，因为编译器只检查声明文件，并不会检查实现。
+
+问题出在连接过程，编译器通常包含不止一个头文件，并且所有的编译器都是这样被调用。下面看个实际的例子：
+
+![image](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/Screen%20Shot%202019-07-11%20at%209.59.44%20PM.png)
+
+上面的例子，app本身使用Swift编写，PetKit使用OC编写，还有一个support文件时C++语言写的，随着时间变化，app结构需要调整，这时候你调整文件的目录，不改变任何实现文件，app任然是可以的。为什么？？？
+
+### Clang是如何找到头文件的？
+
+```objective-c
+#import <PetKit/Cat.h>
+
+@Implementation Cat 
+
+@end
+```
+
+比如上面的代码中，包含一个头文件命名为 **cat.h**,如何查看Clang做的工作呢？
+
+**通过构建日志查看；在xcode的build中；**
+
+打开命令行输入 **clang <list of arguments> -c Cat.mm -o Cat.o -v**;可以得到很多信息；我们只需要关注 **#include <…> search starts here**；这里的所搜路径不是指向源代码的搜索路径；而是看到的一个称为 **headermap**的东西；
+
+![search](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/07111029.png)
+
+Headermaps是xcode构建系统创建，来说明头文件的位置
+
+#### 什么是Header Maps?
+
+![header](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/07111036.png)
+
+前两行只是给这个两个头文件插入了框架的名称，（个人建议不要依赖构建系统为你插入框架的名称，因为不写框架名称可能会对clang模块有影响），第三行是项目头文件，headermap是为了连接回源代码。公开头文件和私有头文件都是为了连接源代码。是为了 **这样做是为了 Clang 可以生成源目录中的文件的有用错误和警告消息,而不是位于生成目录中其他位置的潜在副本**
+
+#### Header maps常见的问题
+
+- 忘记将头文件添加到项目里面，它源目录里面但是不在你项目里
+- 头文件命名重复，所有头文件需要区分；
+
+#### Clang如何找到系统头文件
+
+
+
+```objective-c
+#import <Foundation/Foundation.h>
+NS_ASSUME_NONNULL_BEGIN
+@interface Pet : NSObject
+- (instancetype)initWithName:(NSString *)name; @property (readonly) NSString *name; @property (readonly) BOOL isHungry;
+- (void)eat;
+ 
+```
+
+上面的例子中，如何找到 **Foundation.h** 头文件？我们按照上面方式查看search path:
+
+```objective-c
+ #include "..." search starts here:  PetKit-generated-files.hmap (headermap)  PetKit-project-headers.hmap (headermap)   
+#include <...> search starts here:  PetKit-own-target-headers.hmap (headermap)  PetKit-all-target-headers.hmap (headermap)  DerivedSources 
+Build/Products/Debug (framework directory)  $(SDKROOT)/usr/include  $(SDKROOT)/System/Library/Frameworks.(framework directory)
+```
+
+头文件映射只用于我们自己的头文件；我们看下最后两行：关注导入路径，默认SDK有两个路径，一个是用户的usr/include；一个是系统库框架，
 
 
 
+- **$(SDKROOT)/usr/include/Foundation/Foundation.h**
 
+  这是正常的文件目录，我们只要输入搜索关键词，这里是Foundation/Foundation.h，但是头文件在这里没找到；找下一个；
 
+- **$(SDKROOT)/System/Library/Frameworks/Foundation.framework/Headers/Foundation.h**
+
+  这是框架目录，Clang查找方式有点不同，首先Clang确定这个框架（Foundation.framewrok）是否定义，然后在头文件目录中(Headers)查找头文件，找到就会停止。如果上面的没有找到呢？下面查找私有头文件目录，比如下面的例子：
+
+- **$SDKROOT/System/Library/Frameworks/Foundation.framework/PrivateHeaders/Bogus.h**
+
+  Apple的Framework不会有任何私有的头文件，但是你自己的框架会有，所以上面步骤之后也会检查你自己的私有头文件。如果私有的头文件目录中也没有，Clang所搜就会停止。
+
+可以让xcode执行Product -> Perform Action -> Preprocess "*.m"，生成这样的headermap文件。
+
+按照上面的方式clang需要处理800多个文件夹找到最后的 **Foundation.h**,每次进行编译都是如如此。如何解决这个问题呢？
 
 ### Clang Modules
 
-用它加快构建速度，
+Clang Modules只需要我们为Framework查找和解析头文件一次，然后存储到硬盘换成并可以再利用，这样可以提升构建速度。
+
+- On-disk cached header representation
+- Reuseable
+- Faster build times
+
+#### Clang Module实现
+
+
+
