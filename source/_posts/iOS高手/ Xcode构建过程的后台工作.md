@@ -233,5 +233,292 @@ Clang Modules只需要我们为Framework查找和解析头文件一次，然后�
 
 #### Clang Module实现
 
+- 和上下文无关
 
+  ```objective-c
+  #define ENABLE_CHINCHILLA 1 // ignored  
+  #import <PetKit/PetKit.h>
+  ***************************
+  #define ENABLE_DOG 1 // ignored  
+  #import <PetKit/PetKit.h>
+  ```
+
+  传统的导入方式，文本也会被导入；预编译器会遵从这个定义并应用到头文件夹，但是如果这样做，每个案例的模块就不一样，不能重复使用，**模块会忽略所有的文本信息**；这样就可以被所有实现文件重复使用了；
+
+- mudule需要各自独立；要明确各自的依赖关系
+
+  ```objective-c
+  #import <Foundation/Foundation.h> // import not required before PetKit module  
+  #import <PetKit/Cat.h>
+  ```
+
+  你只需要导入一个模块，而不需要导入其他头文件；
+
+#### Clang如何知道创建Module
+
+看下面的例子：
+
+```objective-c
+#import <Foundation/NSString.h>
+ 
+```
+
+我们知道了上面的头文件是如何找的，Foudation.framework的目录：
+
+```objective-c
+Foundation.framework/
+	Headers/ 
+		Foundation.h 
+    NSString.h  ... 
+	Modules/  
+		module.modulemap
+```
+
+Clang编译器首先模块目录和模块映射（和头文件目录有关）；
+
+**什么是modulemap?**
+
+```objective-c
+// Module Map - Foundation.framework/Modules/module.modulemap
+ framework module Foundation [extern_c] [system] {
+   umbrella header "Foundation.h"
+   export *
+   module * {
+   	export *
+ 	 }
+   explicit module NSDebug {
+     header "NSDebug.h"
+     export *
+   }
+ }
+
+//umbrella header foundation.h
+// Foundation.h
+...
+#import <Foundation/NSScanner.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSSortDescriptor.h>
+#import <Foundation/NSStream.h> #import <Foundation/NSString.h>
+#import <Foundation/NSTextCheckingResult.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSTimeZone.h>
+...
+```
+
+modulemap描述了你的特定的一组头文件是如何映射到你的模块中；上面的就是Foundation的modulemap;
+
+- 说明了哪个头文件属于该模块；这里只有Foundation.h一个，但这是一个特殊的头文件，这个是umbrella头文件，这就是说Clang要查找这个特殊的头文件，来确定NSString.h是不是这个模块的一部分；然后在这个umbrella header中可以找到；
+- Clang确定NSSting.h属于Foundation模块后，我们可以替换文本输入到模块输入
+
+#### 如何创建Foundation模块
+
+- 首先为Clang单独创建位置；Clang位置里面包含了所有Foundation的头文件；
+- 我们不会转移任何来自原始的编译器调用的现有的上下文
+- 实际上转移的是传递给Clang命令行实参，随后继续传递
+
+在创建Foundation模块的时候，framework本身会引入其他框架，也就是说我们有需要构建引用的那些模块，这个会不断向下寻找，但是我么看到一个好处，我们可以复用某些module,**所有的module都要序列化存储到模块缓存区**；
+
+```
+$ clang -fmodules —DENABLE_CHINCHILLA=1 ...
+98XN8P5QH5OQ/  
+  CoreFoundation-2A5I5R2968COJ.pcm  
+  Security-1A229VWPAK67R.pcm 
+  Foundation-1RDF848B47PF4.pcm
+$ clang -fmodules —DENABLE_CAT=1 ...
+1GYDULU5XJRF/ 
+  CoreFoundation-2A5I5R2968COJ.pcm  
+  Security-1A229VWPAK67R.pcm 
+  Foundation-1RDF848B47PF4.pcm
+```
+
+在创建模块的时候，**命令行实参会向后传递**，就是说这些实参会影响module的内容，因此我们需要hash这些实参，再保存这些为特定编译器调用而创建的moudle到Hash匹配的目录中。
+
+#### 如何为自己的框架创建Module
+
+```objective-c
+//
+// NorwegianCat.h // PetKit
+//
+#import <PetKit/Cat.h>
+NS_ASSUME_NONNULL_BEGIN @interface NorwegianCat: Cat ...
+@end
+NS_ASSUME_NONNULL_END
+ 
+```
+
+如果要使用modulemap,它会映射到源目录；下面是源文件目录：
+
+```objective-c
+PetWall/  
+  PetKit/ 
+    Cat/  
+      Cat.h 
+      Cat.mm 
+      ... 
+  Info.plist 
+  Pet.h  
+  Pet.m  
+  PetKit.h
+```
+
+上面的源文件目录没有模块目录，看上去根本不是框架；clang不知道怎么做，这时有个叫做 **Clang 虚拟文件系统**，他会创建一个虚拟的抽象框架，方便Clang创建模块，**但是，抽象框架只是映射到目录文件的源文件,这样Clang就可以提示源文件的错误**
+
+![dd](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/07171120.png)
+
+**不指定Framework名字可能出错**
+
+```
+#import <PetKit/PetKit.h>  
+#import “Cat.h”
+```
+
+第一行制定Petkit模块，第二行我们可以知道这个是Petkit中的，但是Clang不知道，因为你没有写明框架的名字，此时你有可能受到重复定义的报错，这样的错误常见于同一个头文件被重复导入；
+
+```objective-c
+#define ENABLE_CUTE_KITTENS 1
+#import <PetKit/PetKit.h>  
+#import “Cat.h”
+```
+
+修改下上下文，模块的导入不受任何影响，但是cat.h还是文本导入不变，但是此时提示就是矛盾定义，Clang无法为你解决；
+
+**无论是导入公有还是私有的头文件，一定记得写明Framework的名字**
+
+
+
+# Swift Builds
+
+对于OC，clang单独编译每个文件；如果你要在另一个文件中引用一个类，你必须引用这个类的头文件；
+
+![dd](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/07180827.png)
+
+**Swift的设计不需要写入头文件**：
+
+- 这对于新手很容易上手
+- 避免了在不同的文件里重复一个声明
+- 但是需要额外的记录来找打头文件
+
+## Swift调用Swift代码
+
+例子：
+
+```objective-c
+import UIKit
+class PetViewController: UIViewController {
+	var view = PetView(name: "Fido", frame: frame)
+	... 
+}
+-----------------------------
+#import "PetWall-Swift.h" 
+@implementation AppDelegate 
+	...
+@end
+----------------------------
+@testable import PetWall
+class TestPetViewController: XCTestCase { 
+}
+```
+
+为了编译上面的这个PetViewController,编译器需要进行2步运算
+
+1. 首先找到声明，包括Swift Target和OC的；
+2. 第二步为类文件生成接口描述，以便声明可以被找到并用于OC和其他Swift目标；
+
+### Swift Target中查找所有的声明
+
+要编译PetViewController.swift编译器会首先查找PetView的初始化方法以便检查调用；但此时，需要先解析PetView.swift，并验证来保证初始化方法的声明是正确的。
+
+编译器现在足够智能，不需要检查初始化方法的主体，但是它还需要做些额外的工作来处理类文件的接口部分；
+
+这和Clang不同，为了编译一个swift文件，编译器会解析Target下所有的swift文件，来检查和编译的接口有关的部分。
+
+![d](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/0718939.png)
+
+#### Xcode9：上面的查找声明的方式会导致重复工作
+
+![d](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/0718947.png)
+
+在xcode9增量调试的构建中：
+
+- 编译器会单独编译每个文件；
+- 文件的编译可以并行进行；
+- 强制编译器重复解析每个文件，解析一次作为实现文件生成.o文件，最终作为接口查找声明；
+
+#### Xcode10将文件合并成组
+
+![d](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/0718948.png)
+
+- 将swift文件进行分组，尽可能多的分担工作；并保证做大限度的并行编译
+- 在同组的文件进行复用处理，只有跨组查询的时候才会进行重新编译，由于分组数量少，因此可以大幅度提升增量调试构建的速度；
+
+## Swift调用OC代码
+
+```objc
+import UIKit
+class PetViewController: UIViewController {
+	var view = PetView(name: "Fido", frame: frame)
+	... 
+}
+```
+
+比如上面的UIKit就是OC语言；这是系统框架，Swift和其他语言不同，它不需要外部功能接口（.h文件）；这就是你需要为每个OC-API编写swift声明；但是编译器内置了Clang的一大部分作为library；这就可以直接导入OC框架；
+
+![d](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/07181031.png)
+
+OC的声明来自哪里？importer会根据Target类型查找头文件；
+
+- 任何target下(OC & Swift)如果你导入的是OC Framework；importer会在clang生成的这个framework的modulemap暴露的头文件中找到定义声明；
+- 如果导入的是OC和Swift混编的framework；importer会在umbrella头文件中查找定义的声明；umbrella定义了公共接口；这样在这个framework里面的swift代码就可以调用这个框架里面的公共OC代码；
+- 在App和单元测试中，可以导入Target的桥接头文件，bridge_header;允许其中的声明可以被Swift调用
+
+##### importer会对函数进行重命名；
+
+**在Xcode查看导入的Swift生成的接口**
+
+点击可以看到根据swift生成接口.h;还可以根据不同版本的swift生成接口；
+
+![d](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/07181101.png)
+
+
+
+## OC调用Swift文件
+
+Swift会生成一个头文件；可以自行导入，
+
+```objective-c
+Write in Swift:
+class PetCollar: NSObject { 
+  @objc
+  var color: UIColor = .blue
+  var name: String = "Fido" 
+}
+
+Use from Objective-C:
+#import "PetWall-Swift.h"//编译器为Swift生成的.h文件
+	- (void)resetCollarColor { self.collar.color = [UIColor redColor];
+}
+```
+
+下面是转换过程：
+
+编译器会对所有的继承自NSObject的swift类和标记为@objc的函数生成OC .h头文件；
+
+![d](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/07181115.png)
+
+对于单元测试和App,生成的头文件包含了公共和私有两种声明；就可以再app的OC部分使用内部的Swift代码；**但是，对于Framework,生成的头文件只包含Public声明，因为头文件包含在构建的产出中，是公共接口的一部分**
+
+在上面的图中，
+
+- 右侧编译器将OC类连接到一个包含了module PetWall的别名的Swift类；
+- Module可以避免两个相同命名的类在运行时出错；
+- 你可以让Swift重命名OC类，通过传递标识给objc 属性使用（@objc(name)）；但是你要保证两个name不重复，比如下面，这样就可以再OC类中使用PWLPetCollar;
+
+![d](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/07181129.png)
+
+## Swift基于Clang的模块概念进行构建
+
+- 再使用声明之前，必须先导入module
+- 可以导入Clang module（纯OC module）
+- 编译器为每个Swift Target生成单独的module,包括 目标APP;所以单元测试的时候，主app也作为一个module使用；
+- 在其他module中使用Swift module；编译器反序列化一个特殊的 swiftmodule文件；在使用时检查它的类型；
 
