@@ -520,5 +520,64 @@ Use from Objective-C:
 - 再使用声明之前，必须先导入module
 - 可以导入Clang module（纯OC module）
 - 编译器为每个Swift Target生成单独的module,包括 目标APP;所以单元测试的时候，主app也作为一个module使用；
-- 在其他module中使用Swift module；编译器反序列化一个特殊的 swiftmodule文件；在使用时检查它的类型；
+- 在其他module中使用Swift module；编译器反序列化一个特殊的 swiftmodule文件；在使用时检查它的类型；这类似于编译器在目标里查找生命；最后编译器会生成一个总的module文件；而不是直接解析Swift文件；
+
+下图右侧就是编译器生成的swiftmodule文件，很像OC的头文件，但是这个swiftmodule是二进制文件；它包含了内联函数的主题，很像OC的静态内联函数、C++的头文件实现；这个文件包含了私有声明的名称和类型，这使得你可以再调试器中引用他们；
+
+![d](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/07190915.png)
+
+### 累加构建过程
+
+![d](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/07191009.png)
+
+对于累加构建，编译器生成部分swiftmodule，然后合并成一个文件代表整个Module；合并的时候可能会生成一个OC头文件，很像一个连接器合并多个文件称为一个可执行文件。
+
+# 连接器 Linker
+
+- 连接器是用来做什么的？
+- 什么是符号 symbols?
+- What are object files? 
+- What are libraries? 
+
+## Linker做什么
+
+Linker是构建一个可执行文件Mach-O的最后一个步骤；Linker会合并所有的.o文件称为一个可执行文件；它只是移动和打包代码，不会产生代码；
+
+比如我们有两种类型的输入文件：
+
+- 第一种是Object files（ .o)
+- 第二种是各种库(.dylib, .tbd, .a)
+
+## Symbols
+
+- 符号是一个名称，代表代码或者数据片段；
+- 代码片段可能会指向其他符号，比如：当一个函数调用另一个函数的时候；
+- 符号具有属性可以影响Linker的行为；比如Weak symbols，指的是当你在系统上运行的时候它可能消失，比如某些API事ios11的，有些事iOS12的；
+  - 连接器决定哪些符号必须出现和哪些符号可以再运行时处理；
+- 编程语言通常将数据编码称为符号，C和C++都可以看到
+
+## Object Files
+
+- Object Files就是编译器的输出内容，.O文件；
+- 是不可执行的Mach-O类型文件，这个文件是代码和数据的集合；因为是编译的代码还没有完成，还有缺失；
+  - 每个文件的fragment是以符号表示，比如Print函数，就是用符号代替代码
+  - fragment可能会引用没有定义的符号，比如如果一个.o文件引用另一个.o文件的函数，那么这个.o文件是未定义的。连接器会查找未定义符号进行link
+
+## Libraries
+
+- 库是定义符号的文件，但是这个文件不属于你的Target;
+
+  - Dylibs: 动态库 frameworks
+    - 动态库的Mach-O文件暴露的代码和数据片段可以被可执行文件是使用；他们是系统的一部分；
+  - TBDs:基于文本的动态库文件
+    - 是给iOS和MacOS创建SDK的时候，比如Mapkit,我们有你可能用到的所有这些动态库和函数；但是我们不想把这些数据和SDK一起加载，这样体积太大；编译器和连接器都不需要这个文件；它只要运行程序；我们创建了stub dylib，删除了所有的符号的主体，只保留了名字；然后转换为文本，这样使用起来比较容易；目前只用于发布SDK来减少体积；
+  - Static archives 静态库
+    - .a是之前使用AR工具创建的.o文件的集合，或者是lib的集合；
+    - AR创建并维护文件组，将它合并称为一个.a库，听上去像是Tar或者zip文件；事实上确实是这样的，.a在更好的工具产生之前被UNIX所用，但是现在的编译器和连接器完全可以理解它并使用，它只是个archive文件；他们孕育了动态链接，在过去，所有的代码都被存档，因此不能涵盖所有的c库，因此如果.o文件含有符号，我们会把整个.o文件从库中提出来，但不会带入其他.o文件，如果在之间引用符号，只需要带入即可，如果是非符号行为，比如静态初始程序，或者将它们以个人dylib的形式重新导入，你需要明确的强制加载或者指定加载让连接器提取所有，即使这些文件没有关联。
+
+  有了很多的.o,会将所有的.o输入到连接器，连接器会创建文件夹放置这些文件
+
+  
+
+![d](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/07191521.png)
 
