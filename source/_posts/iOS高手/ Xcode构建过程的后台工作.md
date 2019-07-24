@@ -581,3 +581,4 @@ Linker是构建一个可执行文件Mach-O的最后一个步骤；Linker会合�
 
 ![d](https://raw.githubusercontent.com/HaviLee/Blog-Images/master/高手/07191521.png)
 
+上面构建的Petkit是PetWall的内嵌框架，
