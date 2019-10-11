@@ -1,12 +1,12 @@
-
 ---
 title: Class本质探究
-date: 2017-01-12 13:47:40
-categories: 
-  - Objective-C
-tags:
-  - Runtime
+date: 2019-09-10 18:47:40
+keywords: 底层原理
 description: 无论类对象还是元类对象，类型都是Class类型；而其底层是objc class结构体的指针，内存中就是结构体.那么这个结构体的结构是什么样的？
+  - 底层
+tags:
+  - iOS
+comments: false
 ---
 
 
